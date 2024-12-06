@@ -1,4 +1,4 @@
-"use clients";
+"use client";
 import { GetMenuItem } from "@/types/menu-item";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -50,7 +50,7 @@ export const Sidebar = ({ isSidebarOpen, menuItems }: SidebarProps) => {
                 {menuItem.subMenu &&
                   !menuItem.path &&
                   (isSubMenuOpen.includes(menuItem.id) ? (
-                    <ChevronUpIcon className="w-5 h-5bg-red-400  hover:text-custom-blue  " />
+                    <ChevronUpIcon className="w-5 h-5bg-red-400  hover:text-custom-blue" />
                   ) : (
                     <ChevronDownIcon className="w-5 h-5 hover:text-custom-blue" />
                   ))}

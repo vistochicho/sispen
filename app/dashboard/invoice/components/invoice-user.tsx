@@ -1,59 +1,59 @@
 import React from "react";
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
 import { Button } from "@/components/ui/button"; // Import ShadCN button
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 // Dummy data sesuai dengan header tabel
 const requests = [
   {
-    applicant: "John Doe",
-    address: "123 Main St, Jakarta",
-    phoneNumber: "+62 812 3456 7890",
-    businessEntity: "LLC",
+    invoice: "INV-101",
+    companyName: "Tech Solutions Ltd.",
+    price: "$1,000.00",
+    date: "2024-12-01",
+    status: "Paid",
+  },
+  {
+    invoice: "INV-102",
+    companyName: "Global Corp.",
+    price: "$2,500.00",
+    date: "2024-12-02",
     status: "Pending",
   },
   {
-    applicant: "Jane Smith",
-    address: "456 Greenway, Surabaya",
-    phoneNumber: "+62 813 9876 5432",
-    businessEntity: "Corporation",
-    status: "Approved",
+    invoice: "INV-103",
+    companyName: "Innovatech Inc.",
+    price: "$3,750.00",
+    date: "2024-12-03",
+    status: "Overdue",
   },
   {
-    applicant: "Emily Johnson",
-    address: "789 Fresh St, Bandung",
-    phoneNumber: "+62 821 2345 6789",
-    businessEntity: "Partnership",
-    status: "Rejected",
+    invoice: "INV-104",
+    companyName: "NextGen Enterprises",
+    price: "$1,800.00",
+    date: "2024-12-04",
+    status: "Paid",
   },
   {
-    applicant: "Michael Brown",
-    address: "101 Tech Lane, Bali",
-    phoneNumber: "+62 822 5678 1234",
-    businessEntity: "Corporation",
+    invoice: "INV-105",
+    companyName: "Prime Dynamics",
+    price: "$4,200.00",
+    date: "2024-12-05",
     status: "Pending",
-  },
-  {
-    applicant: "Sarah Williams",
-    address: "202 Edu Rd, Yogyakarta",
-    phoneNumber: "+62 823 4567 8910",
-    businessEntity: "LLC",
-    status: "Approved",
   },
 ];
 
-const TableRequestStatus = () => {
+const InvoiceUser = () => {
   return (
     <div className="p-4">
       <div className="space-y-2 pb-6">
-        <h2 className="font-semibold text-lg leading-7">Status of Request</h2>
+        <h2 className="font-semibold text-lg leading-7">Billing & Invoices</h2>
         <p className="text-sm">
-          Track the progress of your document submissions for company establishment, with a clear overview of your requests and their current status.
+          View and manage your invoices with ease. Track payment statuses, review details, and stay updated on your billing history, all in one place.
         </p>
       </div>
+
       {/* Header with Pagination and Search */}
       <div className="flex justify-between items-center mb-4">
         <Select>
@@ -78,26 +78,28 @@ const TableRequestStatus = () => {
       <Table className="border border-zinc-200">
         <TableHeader>
           <TableRow className="bg-gray-200">
-            <TableHead>Applicant</TableHead>
-            <TableHead>Address</TableHead>
-            <TableHead>Phone Number</TableHead>
-            <TableHead>Selected Business Entities</TableHead>
+            <TableHead>Invoice</TableHead>
+            <TableHead>Name of Company</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="text-center">Action</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {requests.map((request, index) => (
             <TableRow key={index}>
-              <TableCell className="border border-zinc-200">{request.applicant}</TableCell>
-              <TableCell className="border border-zinc-200">{request.address}</TableCell>
-              <TableCell className="border border-zinc-200">{request.phoneNumber}</TableCell>
-              <TableCell className="border border-zinc-200">{request.businessEntity}</TableCell>
+              <TableCell className="border border-zinc-200">{request.invoice}</TableCell>
+              <TableCell className="border border-zinc-200">{request.companyName}</TableCell>
+              <TableCell className="border border-zinc-200">{request.price}</TableCell>
+              <TableCell className="border border-zinc-200">{request.date}</TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
-                <Button variant="outline" size="sm">
-                  Detail
-                </Button>
+                <Link href="/dashboard/invoice/detail-invoice/id">
+                  <Button variant="outline" size="sm">
+                    Detail
+                  </Button>
+                </Link>
               </TableCell>
             </TableRow>
           ))}
@@ -118,4 +120,4 @@ const TableRequestStatus = () => {
   );
 };
 
-export default TableRequestStatus;
+export default InvoiceUser;

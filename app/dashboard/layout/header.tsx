@@ -41,6 +41,8 @@ export const Header = ({ toggleSidebar, userData }: HeaderProps) => {
                   src={userData.gender === "Male" ? "/placeholder-male.jpg" : "/placeholder-female.jpg"}
                   alt="Profile"
                   className="h-8 w-8 rounded-full bg-gray-50 mr-4"
+                  width={32}
+                  height={32}
                 />
                 <span className="hidden lg:flex lg:items-center">
                   <p className="line-clamp-1 max-w-[100px] text-sm">

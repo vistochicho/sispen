@@ -2,7 +2,6 @@ import { GetMenuItem } from "@/types/menu-item";
 import React from "react";
 import LayoutWrapper from "./components/layout-wrapper";
 import { headers } from "next/headers";
-import { auth } from "@/auth";
 import { GetShortUser } from "@/types/short-user";
 
 export default async function DashboardLayout({

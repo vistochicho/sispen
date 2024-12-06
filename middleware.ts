@@ -5,7 +5,7 @@ export default middleware((req) => {
   const { pathname } = req.nextUrl;
 
   // Define paths
-  const pathUsers = ["/dashboard", "/dashboard/request-status", "/dashboard/package-list", "/dashboard/package-list/package-form"];
+  const pathUsers = ["/dashboard", "/dashboard/request-status", "/dashboard/package-list", "/dashboard/package-list/package-form/*", "/dashboard/invoice"];
   const pathAdmin = [
     "/dashboard",
     "/dashboard/customer",
@@ -14,6 +14,7 @@ export default middleware((req) => {
     "/dashboard/request-legality/on-progress",
     "/dashboard/client-list",
     "/dashboard/user-management",
+    "/dashboard/invoice",
   ];
 
   // Define Path Login etc
@@ -28,7 +29,11 @@ export default middleware((req) => {
 
     // Logic for role "users"
     if (userRole === "users") {
-      if (pathUsers.includes(pathname)) {
+      const isUserPath = pathUsers.some(
+        (path) => pathname.startsWith(path) // Allow dynamic paths
+      );
+
+      if (isUserPath) {
         return NextResponse.next(); // Allow access
       }
       return NextResponse.redirect(new URL("/dashboard", req.url)); // Redirect to /dashboard

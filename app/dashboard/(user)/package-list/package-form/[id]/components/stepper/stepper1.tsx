@@ -1,20 +1,35 @@
 "use client";
-import React, { useState } from "react";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/16/solid";
-import FormPT from "./company-choice/form-pt";
-import FormCV from "./company-choice/form-cv";
-import FormPMA from "./company-choice/form-pma";
+import FormPT from "../company-choice/form-pt";
+import FormCV from "../company-choice/form-cv";
+import FormPMA from "../company-choice/form-pma";
+import React, { useState } from "react";
 
-const FormPackage = () => {
+interface Stepper1Props {
+  handleSubmit: (e: React.FormEvent) => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isFormData: {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+  };
+}
+
+const Step1 = ({ handleSubmit, handleChange, isFormData }: Stepper1Props) => {
   const [isSelected, setIsSelected] = useState<string>("");
+
+  const isFormValid = (): boolean => {
+    return Object.values(isFormData).every((value) => value.trim() !== "");
+  };
 
   const handleSelect = (name: string) => {
     setIsSelected(name);
   };
+
   return (
-    <div className="bg-white rounded-lg">
+    <>
       <div className="p-6 border-b-2 border-gray-100 font-semibold">Submission Form</div>
-      <form className="p-6">
+      <form className="p-6" onSubmit={handleSubmit}>
         <div className="space-y-8">
           <div className="border-b border-gray-900/10 pb-12">
             <h2 className="text-base font-semibold leading-7 text-gray-900">Profile</h2>
@@ -43,11 +58,13 @@ const FormPackage = () => {
                 <div className="mt-2">
                   <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 w-full">
                     <input
-                      id="username"
-                      name="username"
+                      id="fullName"
+                      name="fullName"
                       type="text"
                       placeholder="janesmith"
-                      autoComplete="username"
+                      autoComplete="fullName"
+                      value={isFormData.fullName}
+                      onChange={handleChange}
                       className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -60,11 +77,13 @@ const FormPackage = () => {
                 <div className="mt-2">
                   <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 w-full">
                     <input
-                      id="username"
-                      name="username"
+                      id="email"
+                      name="email"
                       type="email"
                       placeholder="janesmith"
-                      autoComplete="username"
+                      autoComplete="email"
+                      value={isFormData.email}
+                      onChange={handleChange}
                       className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -77,11 +96,13 @@ const FormPackage = () => {
                 <div className="mt-2">
                   <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 w-full">
                     <input
-                      id="username"
-                      name="username"
+                      id="phoneNumber"
+                      name="phoneNumber"
                       type="number"
                       placeholder="janesmith"
-                      autoComplete="username"
+                      autoComplete="phoneNumber"
+                      value={isFormData.phoneNumber}
+                      onChange={handleChange}
                       className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -191,10 +212,20 @@ const FormPackage = () => {
           </div>
 
           {isSelected && isSelected === "PT" ? <FormPT /> : isSelected === "CV" ? <FormCV /> : isSelected === "PMA" ? <FormPMA /> : <></>}
+
+          <div className="flex justify-end">
+            <button
+              className={`text-white rounded-md px-6 py-1.5 ${isFormValid() ? "bg-blue-400 hover:bg-blue-500" : "bg-gray-300 cursor-not-allowed"}`}
+              type="submit"
+              disabled={!isFormValid()}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </form>
-    </div>
+    </>
   );
 };
 
-export default FormPackage;
+export default Step1;

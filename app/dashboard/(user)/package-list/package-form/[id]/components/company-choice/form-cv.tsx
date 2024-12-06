@@ -1,6 +1,6 @@
 import React from "react";
 
-const FormPT = () => {
+const FormCV = () => {
   return (
     <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
       {/* Nama Perusahaan */}
@@ -160,12 +160,9 @@ const FormPT = () => {
         <div>
           <button className="text-blue-400 px-2.5 py-1.5">Clear Form</button>
         </div>
-        <div>
-          <button className="text-white bg-blue-400 hover:bg-blue-500 rounded-md px-6 py-1.5">Submit</button>
-        </div>
       </div>
     </div>
   );
 };
 
-export default FormPT;
+export default FormCV;

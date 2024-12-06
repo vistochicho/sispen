@@ -149,7 +149,7 @@ const FormPackage = ({ id }: PackageDataProps) => {
   return (
     <div className="bg-white rounded-lg">
       {/* INI STEPPER */}
-      <div className="flex gap-4 items-center w-full">
+      <div className="flex gap-4 items-center w-full p-6">
         {/* Step 1 */}
         <div
           className={`rounded-full py-4 px-6 border ${
@@ -177,13 +177,9 @@ const FormPackage = ({ id }: PackageDataProps) => {
         {/* Step 3 */}
         <div className={`rounded-full py-4 px-6 border ${isStepper === 3 ? "border-green-400" : "border-zinc-400"} flex justify-center text-md`}>3</div>
       </div>
-
       {/* PAGE */}
-
       {isStepper === 1 && <Step1 handleSubmit={handleSubmit} handleChange={handleChange} isFormData={isFormData} />}
-
       {isStepper === 2 && <Step2 handlePrevious={handlePrevious} handleNext={handleNext} isFormData={isFormData} isPackageData={isPackageData!} />}
-
       {isStepper === 3 && <Step3 isCount={isCount} />}
     </div>
   );

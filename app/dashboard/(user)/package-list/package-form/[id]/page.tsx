@@ -6,10 +6,8 @@ const PackageForm = async ({ params }: { params: { id: string } }) => {
   console.log(id);
 
   return (
-    <div className="bg-white h-auto">
-      <div className="p-6">
-        <FormPackage id = {id} />
-      </div>
+    <div className="p-6">
+      <FormPackage id={id} />
     </div>
   );
 };

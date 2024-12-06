@@ -91,10 +91,8 @@ const PackageList = async () => {
   const data = await fetchPackageList();
 
   return (
-    <div className="bg-white h-auto">
-      <div className="p-6">
-        <PackageListPage dataPackage={data} />
-      </div>
+    <div className="p-6">
+      <PackageListPage dataPackage={data} />
     </div>
   );
 };

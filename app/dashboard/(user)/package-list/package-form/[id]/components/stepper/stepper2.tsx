@@ -16,7 +16,7 @@ const Step2 = ({ handlePrevious, handleNext, isFormData, isPackageData }: Step2P
   return (
     <>
       <div className="p-6 border-b-2 border-gray-100 font-semibold">Transaction Detail</div>
-      <div className="pt-6 flex flex-row justify-between gap-4">
+      <div className="flex flex-row justify-between gap-4 p-6">
         <div className="flex flex-col space-y-4 w-1/2">
           <span>Nama: {isFormData.fullName}</span>
           <span>Email: {isFormData.email}</span>
@@ -40,7 +40,7 @@ const Step2 = ({ handlePrevious, handleNext, isFormData, isPackageData }: Step2P
           </div>
         </div>
       </div>
-      <div className="py-4 flex justify-between">
+      <div className="p-6 flex justify-between">
         <button className="text-white bg-zinc-400 hover:bg-zinc-500 rounded-md px-6 py-1.5" type="submit" onClick={handlePrevious}>
           Previous
         </button>

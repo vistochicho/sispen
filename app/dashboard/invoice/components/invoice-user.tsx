@@ -46,7 +46,7 @@ const requests = [
 
 const InvoiceUser = () => {
   return (
-    <div className="p-4">
+    <div className="p-4 bg-white">
       <div className="space-y-2 pb-6">
         <h2 className="font-semibold text-lg leading-7">Billing & Invoices</h2>
         <p className="text-sm">
@@ -95,7 +95,7 @@ const InvoiceUser = () => {
               <TableCell className="border border-zinc-200">{request.date}</TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
-                <Link href="/dashboard/invoice/detail-invoice/id">
+                <Link href="/dashboard/invoice/detail/id">
                   <Button variant="outline" size="sm">
                     Detail
                   </Button>

@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"; // Import ShadCN button
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 // Dummy data sesuai dengan header tabel
 const requests = [
@@ -47,7 +48,7 @@ const requests = [
 
 const TableRequestStatus = () => {
   return (
-    <div className="p-4">
+    <div className="p-4 bg-white">
       <div className="space-y-2 pb-6">
         <h2 className="font-semibold text-lg leading-7">Status of Request</h2>
         <p className="text-sm">
@@ -95,9 +96,11 @@ const TableRequestStatus = () => {
               <TableCell className="border border-zinc-200">{request.businessEntity}</TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
-                <Button variant="outline" size="sm">
-                  Detail
-                </Button>
+                <Link href="/dashboard/request-status/detail/id">
+                  <Button variant="outline" size="sm">
+                    Detail
+                  </Button>
+                </Link>
               </TableCell>
             </TableRow>
           ))}

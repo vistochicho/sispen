@@ -11,7 +11,7 @@ const InvoiceDetail = () => {
 
   return (
     <>
-      <div className="py-4 flex justify-between">
+      <div className="py-4 flex justify-between ">
         <Link href="/dashboard/invoice/">
           <button className="text-white bg-zinc-400 hover:bg-gray-500 rounded-md px-6 py-1.5" type="submit">
             Back

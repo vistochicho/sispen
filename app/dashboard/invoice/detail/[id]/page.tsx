@@ -1,7 +1,7 @@
 import React from "react";
 import InvoiceDetail from "./components/invoice-detail";
 
-const DetailInvoice = () => {
+const DetailPage = () => {
   return (
     <div className="h-auto">
       <InvoiceDetail />
@@ -9,4 +9,4 @@ const DetailInvoice = () => {
   );
 };
 
-export default DetailInvoice;
+export default DetailPage;

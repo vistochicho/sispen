@@ -8,39 +8,36 @@ import Link from "next/link";
 // Dummy data sesuai dengan header tabel
 const requests = [
   {
-    invoice: "INV-101",
-    companyName: "Tech Solutions Ltd.",
-    price: "$1,000.00",
-    date: "2024-12-01",
-    status: "Paid",
+    invoice: "INV001",
+    companyName: "PT ABC Teknologi",
+    price: "$1,200",
+    startDate: "2024-12-01",
+    endDate: "2024-12-31",
+    status: "Completed",
   },
   {
-    invoice: "INV-102",
-    companyName: "Global Corp.",
-    price: "$2,500.00",
-    date: "2024-12-02",
+    invoice: "INV002",
+    companyName: "PT Jaya Persada",
+    price: "$900",
+    startDate: "2024-11-15",
+    endDate: "2024-12-15",
     status: "Pending",
   },
   {
-    invoice: "INV-103",
-    companyName: "Innovatech Inc.",
-    price: "$3,750.00",
-    date: "2024-12-03",
-    status: "Overdue",
+    invoice: "INV003",
+    companyName: "PT Maju Bersama",
+    price: "$1,500",
+    startDate: "2024-10-01",
+    endDate: "2024-10-31",
+    status: "In Progress",
   },
   {
-    invoice: "INV-104",
-    companyName: "NextGen Enterprises",
-    price: "$1,800.00",
-    date: "2024-12-04",
-    status: "Paid",
-  },
-  {
-    invoice: "INV-105",
-    companyName: "Prime Dynamics",
-    price: "$4,200.00",
-    date: "2024-12-05",
-    status: "Pending",
+    invoice: "INV004",
+    companyName: "PT Sejahtera Abadi",
+    price: "$2,000",
+    startDate: "2024-09-01",
+    endDate: "2024-09-30",
+    status: "Completed",
   },
 ];
 
@@ -81,7 +78,8 @@ const InvoiceUser = () => {
             <TableHead>Invoice</TableHead>
             <TableHead>Name of Company</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Date</TableHead>
+            <TableHead>Start Date</TableHead>
+            <TableHead>End Date</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
@@ -92,7 +90,8 @@ const InvoiceUser = () => {
               <TableCell className="border border-zinc-200">{request.invoice}</TableCell>
               <TableCell className="border border-zinc-200">{request.companyName}</TableCell>
               <TableCell className="border border-zinc-200">{request.price}</TableCell>
-              <TableCell className="border border-zinc-200">{request.date}</TableCell>
+              <TableCell className="border border-zinc-200">{request.startDate}</TableCell>
+              <TableCell className="border border-zinc-200">{request.endDate}</TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
                 <Link href="/dashboard/invoice/detail/id">

@@ -6,10 +6,9 @@ const PackageList = async () => {
     return [
       {
         id: "1",
-        title: "Package 1",
-        price: 10000000,
-        description:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae tenetur numquam aliquid explicabo enim ea modi exercitationem perspiciatis praesentium fugiat veniam, est amet eum accusantium accusamus obcaecati, harum magni pariatur!",
+        title: "Pembuatan CV",
+        price: 3950000,
+        description: "AKTA, SK, SKT, NPWP DOMISILI, NIB RBA, IJIN USAHA, API",
         package_list: [
           {
             bonus_name: "Business License",
@@ -33,10 +32,9 @@ const PackageList = async () => {
       },
       {
         id: "2",
-        title: "Package 2",
-        price: 7000000,
-        description:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae tenetur numquam aliquid explicabo enim ea modi exercitationem perspiciatis praesentium fugiat veniam, est amet eum accusantium accusamus obcaecati, harum magni pariatur!",
+        title: "Pembuatan PT",
+        price: 5350000,
+        description: "AKTA, SK, SKT, NPWP DOMISILI, NIB RBA, IJIN USAHA, API",
         package_list: [
           {
             bonus_name: "Business License",
@@ -60,10 +58,9 @@ const PackageList = async () => {
       },
       {
         id: "3",
-        title: "Package 3",
-        price: 12000000,
-        description:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae tenetur numquam aliquid explicabo enim ea modi exercitationem perspiciatis praesentium fugiat veniam, est amet eum accusantium accusamus obcaecati, harum magni pariatur!",
+        title: "Pembuatan PMA",
+        price: 8150000,
+        description: "AKTA, SK, SKT, NPWP DOMISILI, NIB RBA, IJIN USAHA, API",
         package_list: [
           {
             bonus_name: "Business License",

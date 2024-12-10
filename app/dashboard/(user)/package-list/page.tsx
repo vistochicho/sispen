@@ -1,88 +1,29 @@
 import React from "react";
 import PackageListPage from "./components/package-list-page";
+import { headers } from "next/headers";
 
 const PackageList = async () => {
+  const headerObj = await headers();
+
   const fetchPackageList = async (): Promise<GetPackageList[]> => {
-    return [
-      {
-        id: "1",
-        title: "Pembuatan CV",
-        price: 3950000,
-        description: "AKTA, SK, SKT, NPWP DOMISILI, NIB RBA, IJIN USAHA, API",
-        package_list: [
-          {
-            bonus_name: "Business License",
-          },
-          {
-            bonus_name: "Tax System",
-          },
-          {
-            bonus_name: "Company Profile",
-          },
-          {
-            bonus_name: "Free Company Website",
-          },
-          {
-            bonus_name: "Free Absent System",
-          },
-          {
-            bonus_name: "Free ERP System",
-          },
-        ],
-      },
-      {
-        id: "2",
-        title: "Pembuatan PT",
-        price: 5350000,
-        description: "AKTA, SK, SKT, NPWP DOMISILI, NIB RBA, IJIN USAHA, API",
-        package_list: [
-          {
-            bonus_name: "Business License",
-          },
-          {
-            bonus_name: "Tax System",
-          },
-          {
-            bonus_name: "Company Profile",
-          },
-          {
-            bonus_name: "Free Company Website",
-          },
-          {
-            bonus_name: "Free Absent System",
-          },
-          {
-            bonus_name: "Free ERP System",
-          },
-        ],
-      },
-      {
-        id: "3",
-        title: "Pembuatan PMA",
-        price: 8150000,
-        description: "AKTA, SK, SKT, NPWP DOMISILI, NIB RBA, IJIN USAHA, API",
-        package_list: [
-          {
-            bonus_name: "Business License",
-          },
-          {
-            bonus_name: "Tax System",
-          },
-          {
-            bonus_name: "Company Profile",
-          },
-          {
-            bonus_name: "Free Company Website",
-          },
-          {
-            bonus_name: "Free Absent System",
-          },
-          {
-            bonus_name: "Free ERP System",
-          },
-        ],
-      },
-    ];
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/package`, {
+        method: "GET",
+        cache: "no-store",
+        headers: headerObj,
+      });
+      if (response.status === 200) {
+        const data = await response.json();
+        // return response.data as GetPackageList[];
+        return data.data as  [];
+      } else {
+        console.error(`Failed to fetch menu items: ${response.statusText}`);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching menu items:", error);
+      return [];
+    }
   };
 
   const data = await fetchPackageList();

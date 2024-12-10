@@ -1,9 +1,7 @@
 type GetPackageList = {
   id: string;
-  title: string;
+  plan: string;
   price: number;
   description: string;
-  package_list?: {
-    bonus_name: string;
-  }[];
+  benefit?: string[];
 };

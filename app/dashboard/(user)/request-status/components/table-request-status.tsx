@@ -7,46 +7,11 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
-// Dummy data sesuai dengan header tabel
-const requests = [
-  {
-    applicant: "John Doe",
-    address: "123 Main St, Jakarta",
-    phoneNumber: "+62 812 3456 7890",
-    businessEntity: "LLC",
-    status: "Pending",
-  },
-  {
-    applicant: "Jane Smith",
-    address: "456 Greenway, Surabaya",
-    phoneNumber: "+62 813 9876 5432",
-    businessEntity: "Corporation",
-    status: "Approved",
-  },
-  {
-    applicant: "Emily Johnson",
-    address: "789 Fresh St, Bandung",
-    phoneNumber: "+62 821 2345 6789",
-    businessEntity: "Partnership",
-    status: "Rejected",
-  },
-  {
-    applicant: "Michael Brown",
-    address: "101 Tech Lane, Bali",
-    phoneNumber: "+62 822 5678 1234",
-    businessEntity: "Corporation",
-    status: "Pending",
-  },
-  {
-    applicant: "Sarah Williams",
-    address: "202 Edu Rd, Yogyakarta",
-    phoneNumber: "+62 823 4567 8910",
-    businessEntity: "LLC",
-    status: "Approved",
-  },
-];
+interface StatReqProps {
+  dataStatReq: GetStatusRequest[];
+}
 
-const TableRequestStatus = () => {
+const TableRequestStatus = ({ dataStatReq }: StatReqProps) => {
   return (
     <div className="p-4 bg-white">
       <div className="space-y-2 pb-6">
@@ -88,12 +53,12 @@ const TableRequestStatus = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {requests.map((request, index) => (
+          {dataStatReq.map((request, index) => (
             <TableRow key={index}>
-              <TableCell className="border border-zinc-200">{request.applicant}</TableCell>
+              <TableCell className="border border-zinc-200">{request.full_name}</TableCell>
               <TableCell className="border border-zinc-200">{request.address}</TableCell>
-              <TableCell className="border border-zinc-200">{request.phoneNumber}</TableCell>
-              <TableCell className="border border-zinc-200">{request.businessEntity}</TableCell>
+              <TableCell className="border border-zinc-200">{request.phone_number}</TableCell>
+              <TableCell className="border border-zinc-200">{request.company_type}</TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
                 <Link href="/dashboard/request-status/detail/id">

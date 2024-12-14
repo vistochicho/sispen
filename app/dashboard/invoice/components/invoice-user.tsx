@@ -6,42 +6,12 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
 // Dummy data sesuai dengan header tabel
-const requests = [
-  {
-    invoice: "INV001",
-    companyName: "PT ABC Teknologi",
-    price: "$1,200",
-    startDate: "2024-12-01",
-    endDate: "2024-12-31",
-    status: "Completed",
-  },
-  {
-    invoice: "INV002",
-    companyName: "PT Jaya Persada",
-    price: "$900",
-    startDate: "2024-11-15",
-    endDate: "2024-12-15",
-    status: "Pending",
-  },
-  {
-    invoice: "INV003",
-    companyName: "PT Maju Bersama",
-    price: "$1,500",
-    startDate: "2024-10-01",
-    endDate: "2024-10-31",
-    status: "In Progress",
-  },
-  {
-    invoice: "INV004",
-    companyName: "PT Sejahtera Abadi",
-    price: "$2,000",
-    startDate: "2024-09-01",
-    endDate: "2024-09-30",
-    status: "Completed",
-  },
-];
 
-const InvoiceUser = () => {
+interface InvoiceProps {
+  invUserData: GetInvoiceUser[];
+}
+
+const InvoiceUser = ({ invUserData }: InvoiceProps) => {
   return (
     <div className="p-4 bg-white">
       <div className="space-y-2 pb-6">
@@ -75,7 +45,7 @@ const InvoiceUser = () => {
       <Table className="border border-zinc-200">
         <TableHeader>
           <TableRow className="bg-gray-200">
-            <TableHead>Invoice</TableHead>
+            {/* <TableHead>Invoice</TableHead> */}
             <TableHead>Name of Company</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Start Date</TableHead>
@@ -85,13 +55,17 @@ const InvoiceUser = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {requests.map((request, index) => (
+          {invUserData.map((request, index) => (
             <TableRow key={index}>
-              <TableCell className="border border-zinc-200">{request.invoice}</TableCell>
-              <TableCell className="border border-zinc-200">{request.companyName}</TableCell>
-              <TableCell className="border border-zinc-200">{request.price}</TableCell>
-              <TableCell className="border border-zinc-200">{request.startDate}</TableCell>
-              <TableCell className="border border-zinc-200">{request.endDate}</TableCell>
+              {/* <TableCell className="border border-zinc-200">{request.id}</TableCell> */}
+              <TableCell className="border border-zinc-200">{request.company_name}</TableCell>
+              <TableCell className="border border-zinc-200">{request.package_price}</TableCell>
+              <TableCell className="border border-zinc-200">
+                {request.end_date instanceof Date ? request.start_date.toLocaleDateString() : "Invalid Date"}
+              </TableCell>
+              <TableCell className="border border-zinc-200">
+                {request.end_date instanceof Date ? request.end_date.toLocaleDateString() : "Invalid Date"}
+              </TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
                 <Link href="/dashboard/invoice/detail/id">

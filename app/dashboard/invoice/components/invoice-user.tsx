@@ -61,14 +61,14 @@ const InvoiceUser = ({ invUserData }: InvoiceProps) => {
               <TableCell className="border border-zinc-200">{request.company_name}</TableCell>
               <TableCell className="border border-zinc-200">{request.package_price}</TableCell>
               <TableCell className="border border-zinc-200">
-                {request.end_date instanceof Date ? request.start_date.toLocaleDateString() : "Invalid Date"}
+                {request.start_date instanceof Date ? request.start_date.toLocaleDateString() : "Invalid Date"}
               </TableCell>
               <TableCell className="border border-zinc-200">
                 {request.end_date instanceof Date ? request.end_date.toLocaleDateString() : "Invalid Date"}
               </TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
-                <Link href="/dashboard/invoice/detail/id">
+                <Link href={`/dashboard/invoice/detail/${request.id}`}>
                   <Button variant="outline" size="sm">
                     Detail
                   </Button>

@@ -1,6 +1,30 @@
 import React from "react";
 
-const FormPMA = () => {
+interface PMAProps {
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleTextAreaChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  isFormData: {
+    photo: string | null;
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    ktp: string | null;
+    kk: string | null;
+    npwp: string | null;
+    company_name: string;
+    company_address: string;
+    kbli: string;
+    company_phone_number: string;
+    company_fax_number: string;
+    company_authorized_capital: string;
+    company_paid_up_capital: string;
+    company_executives: string;
+    company_message: string;
+  };
+}
+
+const FormPMA = ({ handleChange, isFormData, handleTextAreaChange }: PMAProps) => {
   return (
     <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
       {/* Nama Perusahaan */}
@@ -11,11 +35,14 @@ const FormPMA = () => {
         <div className="mt-2">
           <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
             <input
-              id="namaPerusahaan"
-              name="namaPerusahaan"
+              id="company_name"
+              name="company_name"
               type="text"
-              placeholder=""
-              className="block border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+              placeholder="Company Name"
+              autoComplete="organization"
+              value={isFormData.company_name}
+              onChange={handleChange}
+              className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
             />
           </div>
         </div>
@@ -28,10 +55,13 @@ const FormPMA = () => {
         </label>
         <div className="mt-2">
           <textarea
-            id="alamatPerusahaan"
-            name="alamatPerusahaan"
-            placeholder=""
-            className="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            id="company_address"
+            name="company_address"
+            autoComplete="company-address"
+            rows={3}
+            onChange={handleTextAreaChange}
+            value={isFormData.company_address}
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
       </div>
@@ -44,11 +74,14 @@ const FormPMA = () => {
         <div className="mt-2">
           <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
             <input
-              id="namaPerusahaan"
-              name="namaPerusahaan"
+              id="kbli"
+              name="kbli"
               type="text"
-              placeholder=""
-              className="block border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+              placeholder="KBLI Code"
+              autoComplete="kbli"
+              value={isFormData.kbli}
+              onChange={handleChange}
+              className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
             />
           </div>
         </div>
@@ -62,10 +95,13 @@ const FormPMA = () => {
         <div className="mt-2">
           <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
             <input
-              id="noTeleponPerusahaan"
-              name="noTeleponPerusahaan"
-              type="tel"
-              placeholder="Phone Number"
+              id="company_phone_number"
+              name="company_phone_number"
+              type="number"
+              placeholder="1234567890"
+              autoComplete="tel"
+              value={isFormData.company_phone_number}
+              onChange={handleChange}
               className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
             />
           </div>
@@ -80,10 +116,13 @@ const FormPMA = () => {
         <div className="mt-2">
           <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
             <input
-              id="noFaxPerusahaan"
-              name="noFaxPerusahaan"
-              type="text"
-              placeholder="No. Fax"
+              id="company_fax_number"
+              name="company_fax_number"
+              type="number"
+              placeholder="Fax Number"
+              autoComplete="fax"
+              value={isFormData.company_fax_number}
+              onChange={handleChange}
               className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
             />
           </div>
@@ -98,10 +137,13 @@ const FormPMA = () => {
         <div className="mt-2">
           <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
             <input
-              id="modalDasarPerusahaan"
-              name="modalDasarPerusahaan"
+              id="company_authorized_capital"
+              name="company_authorized_capital"
               type="number"
-              placeholder="Modal Dasar"
+              placeholder="Authorized Capital"
+              autoComplete="off"
+              value={isFormData.company_authorized_capital}
+              onChange={handleChange}
               className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
             />
           </div>
@@ -116,10 +158,13 @@ const FormPMA = () => {
         <div className="mt-2">
           <div className="flex rounded-lg px-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
             <input
-              id="modalDisetorPerusahaan"
-              name="modalDisetorPerusahaan"
+              id="company_paid_up_capital"
+              name="company_paid_up_capital"
               type="number"
-              placeholder="Modal Disetor"
+              placeholder="Paid-up Capital"
+              autoComplete="off"
+              value={isFormData.company_paid_up_capital}
+              onChange={handleChange}
               className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
             />
           </div>
@@ -133,10 +178,13 @@ const FormPMA = () => {
         </label>
         <div className="mt-2">
           <textarea
-            id="alamatPerusahaan"
-            name="alamatPerusahaan"
-            placeholder=""
-            className="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            id="company_executives"
+            name="company_executives"
+            autoComplete="company-executives"
+            rows={3}
+            onChange={handleTextAreaChange}
+            value={isFormData.company_executives}
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
       </div>
@@ -148,10 +196,13 @@ const FormPMA = () => {
         </label>
         <div className="mt-2">
           <textarea
-            id="alamatPerusahaan"
-            name="alamatPerusahaan"
-            placeholder=""
-            className="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            id="company_message"
+            name="company_message"
+            autoComplete="company-message"
+            rows={3}
+            onChange={handleTextAreaChange}
+            value={isFormData.company_message}
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
       </div>

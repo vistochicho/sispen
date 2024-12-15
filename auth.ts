@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import { signInSchema } from "./lib/zod";
 import { supabase } from "./supabase";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -38,10 +39,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const isValidPassword = await bcrypt.compareSync(password, userData[0].password);
         if (!isValidPassword) return null;
 
+        const accessToken = jwt.sign(
+          {
+            userId: userData[0].id,
+            key: process.env.KEY_SECRET!,
+          },
+          process.env.AUTH_SECRET!, // Secret key to sign the token
+          {
+            expiresIn: "1h", // Set the expiration to 1 hour or as needed
+          }
+        );
+
         return {
           userId: userData[0].id,
           role: userData[0].role,
           roleid: userData[0].roleid,
+          accessToken,
         };
       },
     }),
@@ -51,8 +64,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // maxAge: 5 * 60, // 5 minutes
   },
   jwt: {
-    // 24 * 60 * 60
-    // maxAge: 5 * 60, // 5 minutes
+    maxAge: 24 * 60 * 60,
+    // secret: process.env.AUTH_SECRET!,
   },
   pages: {
     signIn: "/login",
@@ -68,6 +81,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           userId: user.id,
           role: user.role,
           roleid: user.roleid,
+          accessToken: user.accessToken,
         };
       }
 
@@ -77,6 +91,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.userId = token.userId as string;
       session.user.role = token.role! as string;
       session.user.roleid = token.roleid! as string;
+      session.user.accessToken = token.accessToken as string;
       return session;
     },
     authorized: async ({ auth }) => {

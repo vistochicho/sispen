@@ -5,14 +5,17 @@ import { useEffect } from "react";
 
 interface Step3Props {
   isCount: number;
+  isInvoiceId: string | null;
 }
 
-const Step3 = ({ isCount }: Step3Props) => {
+const Step3 = ({ isCount, isInvoiceId }: Step3Props) => {
   const router = useRouter();
+
+  // console.log("redirect", isInvoiceId);
 
   useEffect(() => {
     if (isCount === 0) {
-      router.push("/dashboard/package-list");
+      router.push(`/dashboard/invoice/detail/${isInvoiceId}`);
     }
   }, [isCount]);
 

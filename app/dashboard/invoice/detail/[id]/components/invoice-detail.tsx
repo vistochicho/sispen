@@ -5,10 +5,13 @@ import React, { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import { PrintContent } from "./print-pdf";
 
-const InvoiceDetail = () => {
+interface InvoiceDetailProps {
+  invoiceData: GetInvUserDet[];
+}
+
+const InvoiceDetail = ({ invoiceData }: InvoiceDetailProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
-
   return (
     <>
       <div className="py-4 flex justify-between ">
@@ -21,7 +24,7 @@ const InvoiceDetail = () => {
           Print
         </button>
       </div>
-      <PrintContent ref={contentRef} />
+      <PrintContent ref={contentRef} invoiceData={invoiceData}/>
     </>
   );
 };

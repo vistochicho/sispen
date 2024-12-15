@@ -6,30 +6,44 @@ import FormPMA from "../company-choice/form-pma";
 import React, { useState } from "react";
 
 interface Stepper1Props {
-  handleSubmit: (e: React.FormEvent) => void;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>, field: "photo" | "ktp" | "kk" | "npwp") => void;
+  handleNext: () => void;
+  handleTextAreaChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleSelect: (name: string) => void;
+  isSelected: string;
   isFormData: {
+    photo: string;
     fullName: string;
     email: string;
     phoneNumber: string;
+    address: string;
+    ktp: string;
+    kk: string;
+    npwp: string;
+    company_name: string;
+    company_address: string;
+    kbli: string;
+    company_phone_number: string;
+    company_fax_number: string;
+    company_authorized_capital: string;
+    company_paid_up_capital: string;
+    company_executives: string;
+    company_message: string;
   };
 }
 
-const Step1 = ({ handleSubmit, handleChange, isFormData }: Stepper1Props) => {
-  const [isSelected, setIsSelected] = useState<string>("");
-
+const Step1 = ({ handleChange, handleNext, isFormData, handleTextAreaChange, handleSelect, isSelected, handleFileChange }: Stepper1Props) => {
   const isFormValid = (): boolean => {
+    // tunggu sampai data semua full baru hilangkan
     return Object.values(isFormData).every((value) => value.trim() !== "");
-  };
-
-  const handleSelect = (name: string) => {
-    setIsSelected(name);
+    // return Object.values(isFormData).every((value) => value === null || (typeof value === "string" && value.trim() !== ""));
   };
 
   return (
     <>
       <div className="p-6 border-b-2 border-gray-100 font-semibold">Submission Form</div>
-      <form className="p-6" onSubmit={handleSubmit}>
+      <form className="p-6">
         <div className="space-y-8">
           <div className="border-b border-gray-900/10 pb-12">
             <h2 className="text-base font-semibold leading-7 text-gray-900">Profile</h2>
@@ -41,12 +55,13 @@ const Step1 = ({ handleSubmit, handleChange, isFormData }: Stepper1Props) => {
               </label>
               <div className="mt-2 flex items-center gap-x-3">
                 <UserCircleIcon aria-hidden="true" className="h-12 w-12 text-gray-300" />
-                <button
-                  type="button"
-                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                >
-                  Change
-                </button>
+                <input
+                  type="file"
+                  name="photo"
+                  id="photo"
+                  onChange={(event) => handleFileChange(event, "photo")}
+                  className="mt-2 w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-600 file:font-semibold hover:file:bg-indigo-100"
+                />
               </div>
             </div>
 
@@ -80,7 +95,7 @@ const Step1 = ({ handleSubmit, handleChange, isFormData }: Stepper1Props) => {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="janesmith"
+                      placeholder="email@example.com"
                       autoComplete="email"
                       value={isFormData.email}
                       onChange={handleChange}
@@ -99,8 +114,8 @@ const Step1 = ({ handleSubmit, handleChange, isFormData }: Stepper1Props) => {
                       id="phoneNumber"
                       name="phoneNumber"
                       type="number"
-                      placeholder="janesmith"
-                      autoComplete="phoneNumber"
+                      placeholder="1234567890"
+                      autoComplete="phone"
                       value={isFormData.phoneNumber}
                       onChange={handleChange}
                       className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
@@ -115,76 +130,80 @@ const Step1 = ({ handleSubmit, handleChange, isFormData }: Stepper1Props) => {
                 </label>
                 <div className="mt-2">
                   <textarea
-                    id="about"
-                    name="about"
+                    id="address"
+                    name="address"
+                    autoComplete="address"
                     rows={3}
+                    onChange={handleTextAreaChange}
+                    value={isFormData.address}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    defaultValue={""}
                   />
                 </div>
                 <p className="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about yourself.</p>
               </div>
 
               <div className="sm:col-span-2">
-                <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="ktp" className="block text-sm font-medium leading-6 text-gray-900">
                   KTP
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                   <div className="text-center">
                     <PhotoIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
-                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                      >
-                        <span>Upload a file</span>
-                        <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
+                    <div className="mt-4 flex flex-col text-sm leading-6 text-gray-600">
+                      <input
+                        type="file"
+                        name="ktp"
+                        id="ktp"
+                        onChange={(event) => handleFileChange(event, "ktp")}
+                        className="mt-2 w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-600 file:font-semibold hover:file:bg-indigo-100"
+                      />
+                      <p className="mt-2 text-xs leading-5 text-gray-600">or drag and drop</p>
                     </div>
-                    <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                    <p className="mt-2 text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
                   </div>
                 </div>
               </div>
+
               <div className="sm:col-span-2">
-                <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="npwp" className="block text-sm font-medium leading-6 text-gray-900">
                   NPWP
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                   <div className="text-center">
                     <PhotoIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
-                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                      >
-                        <span>Upload a file</span>
-                        <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
+                    <div className="mt-4 flex flex-col text-sm leading-6 text-gray-600">
+                      <input
+                        type="file"
+                        name="npwp"
+                        id="npwp"
+                        onChange={(event) => handleFileChange(event, "npwp")}
+                        className="mt-2 w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-600 file:font-semibold hover:file:bg-indigo-100"
+                      />
+                      <p className="mt-2 text-xs leading-5 text-gray-600">or drag and drop</p>
                     </div>
-                    <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                    <p className="mt-2 text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
                   </div>
                 </div>
               </div>
+
               <div className="sm:col-span-2">
-                <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="kk" className="block text-sm font-medium leading-6 text-gray-900">
                   KK
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                   <div className="text-center">
                     <PhotoIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
-                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                      >
-                        <span>Upload a file</span>
-                        <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
+                    <div className="mt-4 flex flex-col text-sm leading-6 text-gray-600">
+                      <input
+                        type="file"
+                        name="kk"
+                        id="kk"
+                        onChange={(event) => handleFileChange(event, "kk")}
+                        className="mt-2 w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-600 file:font-semibold hover:file:bg-indigo-100"
+                      />
+                      <p className="mt-2 text-xs leading-5 text-gray-600">or drag and drop</p>
                     </div>
-                    <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                    <p className="mt-2 text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
                   </div>
                 </div>
               </div>
@@ -211,13 +230,22 @@ const Step1 = ({ handleSubmit, handleChange, isFormData }: Stepper1Props) => {
             </div>
           </div>
 
-          {isSelected && isSelected === "PT" ? <FormPT /> : isSelected === "CV" ? <FormCV /> : isSelected === "PMA" ? <FormPMA /> : <></>}
+          {isSelected && isSelected === "PT" ? (
+            <FormPT handleChange={handleChange} isFormData={isFormData} handleTextAreaChange={handleTextAreaChange} />
+          ) : isSelected === "CV" ? (
+            <FormCV handleChange={handleChange} isFormData={isFormData} handleTextAreaChange={handleTextAreaChange} />
+          ) : isSelected === "PMA" ? (
+            <FormPMA handleChange={handleChange} isFormData={isFormData} handleTextAreaChange={handleTextAreaChange} />
+          ) : (
+            <></>
+          )}
 
           <div className="flex justify-end">
             <button
               className={`text-white rounded-md px-6 py-1.5 ${isFormValid() ? "bg-blue-400 hover:bg-blue-500" : "bg-gray-300 cursor-not-allowed"}`}
-              type="submit"
+              type="button"
               disabled={!isFormValid()}
+              onClick={handleNext}
             >
               Next
             </button>

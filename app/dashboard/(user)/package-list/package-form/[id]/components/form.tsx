@@ -3,110 +3,49 @@ import React, { useEffect, useState } from "react";
 import Step1 from "./stepper/stepper1";
 import Step2 from "./stepper/stepper2";
 import Step3 from "./stepper/stepper3";
+import axios from "axios";
 
 interface PackageDataProps {
   id: string;
+  dataPackage: GetPackageList[];
 }
 
-const data: GetPackageList[] = [
-  {
-    id: "1",
-    title: "Package 1",
-    price: 10000000,
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae tenetur numquam aliquid explicabo enim ea modi exercitationem perspiciatis praesentium fugiat veniam, est amet eum accusantium accusamus obcaecati, harum magni pariatur!",
-    package_list: [
-      {
-        bonus_name: "Business License",
-      },
-      {
-        bonus_name: "Tax System",
-      },
-      {
-        bonus_name: "Company Profile",
-      },
-      {
-        bonus_name: "Free Company Website",
-      },
-      {
-        bonus_name: "Free Absent System",
-      },
-      {
-        bonus_name: "Free ERP System",
-      },
-    ],
-  },
-  {
-    id: "2",
-    title: "Package 2",
-    price: 7000000,
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae tenetur numquam aliquid explicabo enim ea modi exercitationem perspiciatis praesentium fugiat veniam, est amet eum accusantium accusamus obcaecati, harum magni pariatur!",
-    package_list: [
-      {
-        bonus_name: "Business License",
-      },
-      {
-        bonus_name: "Tax System",
-      },
-      {
-        bonus_name: "Company Profile",
-      },
-      {
-        bonus_name: "Free Company Website",
-      },
-      {
-        bonus_name: "Free Absent System",
-      },
-      {
-        bonus_name: "Free ERP System",
-      },
-    ],
-  },
-  {
-    id: "3",
-    title: "Package 3",
-    price: 12000000,
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae tenetur numquam aliquid explicabo enim ea modi exercitationem perspiciatis praesentium fugiat veniam, est amet eum accusantium accusamus obcaecati, harum magni pariatur!",
-    package_list: [
-      {
-        bonus_name: "Business License",
-      },
-      {
-        bonus_name: "Tax System",
-      },
-      {
-        bonus_name: "Company Profile",
-      },
-      {
-        bonus_name: "Free Company Website",
-      },
-      {
-        bonus_name: "Free Absent System",
-      },
-      {
-        bonus_name: "Free ERP System",
-      },
-    ],
-  },
-];
-
-const FormPackage = ({ id }: PackageDataProps) => {
+const FormPackage = ({ id, dataPackage }: PackageDataProps) => {
   const [isPackageData, setIsPackageData] = useState<GetPackageList | null>(null);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isInvoiceId, setInvoiceId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPhoto, setIsPhoto] = useState<File | null>(null);
+  const [isKtp, setIsKtp] = useState<File | null>(null);
+  const [isNpwp, setIsNpwp] = useState<File | null>(null);
+  const [isKk, setIsKk] = useState<File | null>(null);
+  const [isSelected, setIsSelected] = useState<string>("");
   const [isFormData, setIsFormData] = useState({
+    photo: "",
     fullName: "",
     email: "",
     phoneNumber: "",
+    address: "",
+    ktp: "",
+    kk: "",
+    npwp: "",
+    company_name: "",
+    company_address: "",
+    kbli: "",
+    company_phone_number: "",
+    company_fax_number: "",
+    company_authorized_capital: "",
+    company_paid_up_capital: "",
+    company_executives: "",
+    company_message: "",
   });
   const [isStepper, setIsStepper] = useState<number>(1);
   const step = ["step 1", "step 2", "step 3"];
   const [isCount, setIsCount] = useState<number>(10);
 
-  console.log(isFormData);
-
   useEffect(() => {
-    const item = data.find((d) => d.id === id);
+    const item = dataPackage.find((d) => d.id === id);
+    // console.log("item", dataPackage);
     setIsPackageData(item || null);
   }, [id]);
 
@@ -116,6 +55,18 @@ const FormPackage = ({ id }: PackageDataProps) => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setIsFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSelect = (name: string) => {
+    setIsSelected(name);
   };
 
   const handleNext = () => {
@@ -128,12 +79,116 @@ const FormPackage = ({ id }: PackageDataProps) => {
     if (isStepper > 1) {
       setIsStepper((prev) => prev - 1);
     }
+
+    setIsSelected("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, field: "photo" | "ktp" | "kk" | "npwp") => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        // Batas ukuran file 5MB
+        alert("File terlalu besar. Maksimal ukuran adalah 5MB.");
+        return;
+      }
+      const fileUrl = URL.createObjectURL(file); // Buat URL sementara untuk file
+      setIsFormData((prev) => ({
+        ...prev,
+        [field]: fileUrl, // Simpan URL sementara ke state
+      }));
+      if (field === "photo") {
+        setIsPhoto(file);
+      } else if (field === "ktp") {
+        setIsKtp(file);
+      } else if (field === "kk") {
+        setIsKk(file);
+      } else if (field === "npwp") {
+        setIsNpwp(file);
+      }
+    }
+  };
+
+  console.log(isFormData);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    handleNext();
-    console.log(isFormData);
+
+    try {
+      setIsLoading(true);
+
+      const packageId = id as string; // Ensure 'id' is correctly passed
+
+      const formData = new FormData();
+
+      formData.append("p_full_name", isFormData.fullName);
+      formData.append("p_email", isFormData.email);
+      formData.append("p_phone_number", isFormData.phoneNumber);
+      formData.append("p_address", isFormData.address);
+      formData.append("p_company_type", isSelected);
+      formData.append("p_company_name", isFormData.company_name);
+      formData.append("p_company_address", isFormData.company_address);
+      formData.append("p_company_kbli", isFormData.kbli);
+      formData.append("p_company_phone_number", isFormData.company_phone_number);
+      formData.append("p_company_authorized_capital", isFormData.company_authorized_capital);
+      formData.append("p_company_paid_up_capital", isFormData.company_paid_up_capital);
+      formData.append("p_company_executives", isFormData.company_executives);
+      formData.append("p_package_id", packageId);
+      formData.append("p_company_fax_number", isFormData.company_fax_number);
+      formData.append("p_note", isFormData.company_message);
+      if (isPhoto instanceof File && isKtp instanceof File && isKk instanceof File && isNpwp instanceof File) {
+        formData.append("p_photo", isPhoto);
+        formData.append("p_ktp", isKtp);
+        formData.append("p_kk", isKk);
+        formData.append("p_npwp", isNpwp);
+      }
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/applicant/`, formData, {
+        headers: {"Content-Type": "multipart/form-data"}
+      });
+
+      if (response.status === 200) {
+        setNotification({ type: "success", message: "Form Inputted successfully!" });
+
+        const applicantId = response.data.data; // Tangkap ID di sini
+        setInvoiceId(applicantId); // Simpan ID ke state
+
+        // console.log("hit", applicantId);
+
+        // Clear the form data
+        setIsFormData({
+          photo: "",
+          fullName: "",
+          email: "",
+          phoneNumber: "",
+          address: "",
+          ktp: "",
+          kk: "",
+          npwp: "",
+          company_name: "",
+          company_address: "",
+          kbli: "",
+          company_phone_number: "",
+          company_fax_number: "",
+          company_authorized_capital: "",
+          company_paid_up_capital: "",
+          company_executives: "",
+          company_message: "",
+        });
+
+        setIsSelected("");
+        handleNext();
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      setNotification({
+        type: "error",
+        message: error.response?.data?.message || "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+      // Hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000);
+    }
   };
 
   useEffect(() => {
@@ -178,9 +233,19 @@ const FormPackage = ({ id }: PackageDataProps) => {
         <div className={`rounded-full py-4 px-6 border ${isStepper === 3 ? "border-green-400" : "border-zinc-400"} flex justify-center text-md`}>3</div>
       </div>
       {/* PAGE */}
-      {isStepper === 1 && <Step1 handleSubmit={handleSubmit} handleChange={handleChange} isFormData={isFormData} />}
-      {isStepper === 2 && <Step2 handlePrevious={handlePrevious} handleNext={handleNext} isFormData={isFormData} isPackageData={isPackageData!} />}
-      {isStepper === 3 && <Step3 isCount={isCount} />}
+      {isStepper === 1 && (
+        <Step1
+          handleNext={handleNext}
+          handleChange={handleChange}
+          isFormData={isFormData}
+          handleSelect={handleSelect}
+          isSelected={isSelected}
+          handleTextAreaChange={handleTextAreaChange}
+          handleFileChange={handleFileChange}
+        />
+      )}
+      {isStepper === 2 && <Step2 handleSubmit={handleSubmit} handlePrevious={handlePrevious} isFormData={isFormData} isPackageData={isPackageData!} />}
+      {isStepper === 3 && <Step3 isCount={isCount} isInvoiceId={isInvoiceId} />}
     </div>
   );
 };

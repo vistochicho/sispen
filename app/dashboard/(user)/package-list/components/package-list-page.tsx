@@ -20,7 +20,7 @@ const PackageListPage = ({ dataPackage }: PackageListProps) => {
                 </h1>
                 <p className="text-md font-sm border-b-1 text-zinc-400">{data.description}</p>
                 <div className="space-y-4 py-4">
-                  {data.benefit?.map((dataBonus, j) => (
+                  {data.benefits?.map((dataBonus, j) => (
                     <div key={j} className="flex items-center">
                       <FaDotCircle className="size-2 mr-2 text-zinc-400" />
                       <span className="text-base text-zinc-400">{dataBonus}</span>

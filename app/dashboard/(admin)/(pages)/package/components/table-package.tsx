@@ -6,37 +6,13 @@ import { Button } from "@/components/ui/button"; // Import ShadCN button
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
-// Dummy data untuk paket
-const packages = [
-  {
-    packageName: "Basic Package",
-    isActive: "active",
-    price: "$50",
-  },
-  {
-    packageName: "Standard Package",
-    isActive: "active",
-    price: "$100",
-  },
-  {
-    packageName: "Premium Package",
-    isActive: "active",
-    price: "$200",
-  },
-  {
-    packageName: "Enterprise Package",
-    isActive: "active",
-    price: "$500",
-  },
-  {
-    packageName: "Custom Package",
-    isActive: "active",
-    price: "Varies",
-  },
-];
+interface PackageProps {
+  dataPackage: GetPackageList[];
+}
 
-const TablePackage = () => {
+const TablePackage = ({ dataPackage }: PackageProps) => {
   return (
     <div className="p-4">
       {/* Filter Section */}
@@ -57,9 +33,11 @@ const TablePackage = () => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm">
-            Add Package
-          </Button>
+          <Link href="/dashboard/package/add-package/">
+            <Button variant="outline" size="sm">
+              Add Package
+            </Button>
+          </Link>
         </div>
         <Input className="w-64" type="text" placeholder="Search Package Name" />
       </div>
@@ -75,13 +53,15 @@ const TablePackage = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {packages.map((pkg, index) => (
+          {dataPackage.map((pkg, index) => (
             <TableRow key={index}>
-              <TableCell className="border border-zinc-200">{pkg.packageName}</TableCell>
-              <TableCell className="border border-zinc-200">{pkg.price}</TableCell>
+              <TableCell className="border border-zinc-200">{pkg.plan}</TableCell>
+              <TableCell className="border border-zinc-200">
+                {new Intl.NumberFormat("id-ID", { style: "currency", currency: "idr" }).format(pkg.price)}
+              </TableCell>
               <TableCell className="border border-zinc-200">
                 {/* design pake badge */}
-                {pkg.isActive}
+                {pkg.status}
               </TableCell>
               <TableCell className="text-center border border-zinc-200 space-x-2">
                 <Button variant="outline" size="sm">

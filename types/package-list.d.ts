@@ -3,5 +3,6 @@ type GetPackageList = {
   plan: string;
   price: number;
   description: string;
-  benefit?: string[];
+  benefits?: string[];
+  status: string;
 };

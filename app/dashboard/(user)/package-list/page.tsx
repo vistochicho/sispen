@@ -15,7 +15,7 @@ const PackageList = async () => {
       if (response.status === 200) {
         const data = await response.json();
         // return response.data as GetPackageList[];
-        return data.data as  [];
+        return data.data as [];
       } else {
         console.error(`Failed to fetch menu items: ${response.statusText}`);
         return [];
@@ -28,6 +28,7 @@ const PackageList = async () => {
 
   const data = await fetchPackageList();
 
+  console.log(data);
   return (
     <div className="p-6">
       <PackageListPage dataPackage={data} />

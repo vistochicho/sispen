@@ -10,6 +10,7 @@ export default middleware((req) => {
     "/dashboard",
     "/dashboard/customer",
     "/dashboard/package",
+    "/dashboard/package/add-package",
     "/dashboard/request-legality/need-review",
     "/dashboard/request-legality/on-progress",
     "/dashboard/client-list",

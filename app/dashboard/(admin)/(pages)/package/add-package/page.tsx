@@ -1,13 +1,15 @@
 import React from "react";
-import TablePackage from "./components/table-package";
+import PackageAddForm from "./components/package-add-form";
 import { headers } from "next/headers";
 
-const Package = async () => {
+const PackageAdd = async () => {
+  const handleSubmit = () => {};
+
   const headerObj = await headers();
 
-  const fetchPackageList = async (): Promise<GetPackageList[]> => {
+  const fetchBenefitsList = async (): Promise<GetBenefitsList[]> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/package`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/benefits`, {
         method: "GET",
         cache: "no-store",
         headers: headerObj,
@@ -28,15 +30,13 @@ const Package = async () => {
     }
   };
 
-  const data = await fetchPackageList();
+  const data = await fetchBenefitsList();
 
   return (
     <div className="bg-white h-auto">
-      <div className="p-6">
-        <TablePackage dataPackage={data} />
-      </div>
+      <PackageAddForm dataBenefits={data} />
     </div>
   );
 };
 
-export default Package;
+export default PackageAdd;

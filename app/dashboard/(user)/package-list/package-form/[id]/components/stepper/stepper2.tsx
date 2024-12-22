@@ -47,7 +47,7 @@ const Step2 = ({ handlePrevious, handleSubmit, isFormData, isPackageData }: Step
     company_message,
   } = isFormData;
 
-  const { plan, price, description, benefit } = isPackageData;
+  const { plan, price, description, benefits } = isPackageData;
 
   return (
     <>
@@ -78,9 +78,9 @@ const Step2 = ({ handlePrevious, handleSubmit, isFormData, isPackageData }: Step
 
           {/* Benefits List */}
           <div className="flex flex-col space-y-2">
-            {benefit && benefit.length > 0 && (
+            {benefits && benefits.length > 0 && (
               <>
-                {benefit.map((dataBonus, i) => (
+                {benefits.map((dataBonus, i) => (
                   <span key={i} className="text-base text-zinc-400 flex items-center">
                     <FaDotCircle className="size-4 mr-2 text-zinc-400" />
                     {dataBonus}

@@ -1,8 +1,8 @@
 import React from "react";
-import PackageAddForm from "./components/package-add-form";
+import AddPackageForm from "./components/add-package-form";
 import { headers } from "next/headers";
 
-const PackageAdd = async () => {
+const AddPackage = async () => {
   const handleSubmit = () => {};
 
   const headerObj = await headers();
@@ -34,9 +34,9 @@ const PackageAdd = async () => {
 
   return (
     <div className="bg-white h-auto">
-      <PackageAddForm dataBenefits={data} />
+      <AddPackageForm dataBenefits={data} />
     </div>
   );
 };
 
-export default PackageAdd;
+export default AddPackage;

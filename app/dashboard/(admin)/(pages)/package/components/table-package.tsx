@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -7,12 +8,39 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface PackageProps {
   dataPackage: GetPackageList[];
 }
 
 const TablePackage = ({ dataPackage }: PackageProps) => {
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/package/delete/?id=${id}`);
+
+      if (response.status === 200) {
+        setNotification({ type: "success", message: "Package deleted successfully!" });
+        router.refresh();
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      setNotification({
+        type: "error",
+        message: error.response?.data?.message || "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+      // Hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
   return (
     <div className="p-4">
       {/* Filter Section */}
@@ -70,7 +98,7 @@ const TablePackage = ({ dataPackage }: PackageProps) => {
                 <Button variant="outline" size="sm">
                   Update
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => handleDelete(pkg.id)}>
                   Delete
                 </Button>
               </TableCell>

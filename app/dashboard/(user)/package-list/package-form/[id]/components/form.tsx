@@ -108,8 +108,6 @@ const FormPackage = ({ id, dataPackage }: PackageDataProps) => {
     }
   };
 
-  console.log(isFormData);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -143,7 +141,7 @@ const FormPackage = ({ id, dataPackage }: PackageDataProps) => {
       }
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/applicant/`, formData, {
-        headers: {"Content-Type": "multipart/form-data"}
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.status === 200) {

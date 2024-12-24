@@ -15,9 +15,7 @@ const Package = async () => {
       if (response.status === 200) {
         const data = await response.json();
         // Map dates into Date objects
-        return data.data.map((item: any) => ({
-          ...item,
-        }));
+        return data.data as GetPackageList[];
       } else {
         console.error(`Failed to fetch menu items: ${response.statusText}`);
         return [];

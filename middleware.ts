@@ -11,6 +11,7 @@ export default middleware((req) => {
     "/dashboard/customer",
     "/dashboard/package",
     "/dashboard/package/add-package",
+    "/dashboard/package/detail-package/*",
     "/dashboard/request-legality/need-review",
     "/dashboard/request-legality/on-progress",
     "/dashboard/client-list",
@@ -42,7 +43,11 @@ export default middleware((req) => {
 
     // Logic for role "admin"
     if (userRole === "admin") {
-      if (pathAdmin.includes(pathname)) {
+      const isAdminPath = pathAdmin.some(
+        (path) => pathname.startsWith(path) // Allow dynamic paths
+      );
+
+      if (isAdminPath) {
         return NextResponse.next(); // Allow access
       }
       return NextResponse.redirect(new URL("/dashboard", req.url)); // Redirect to /dashboard

@@ -3,13 +3,13 @@ import React, { useState } from "react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-import { Button } from "@/components/ui/button"; // Import ShadCN button
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface PackageProps {
   dataPackage: GetPackageList[];
@@ -92,9 +92,11 @@ const TablePackage = ({ dataPackage }: PackageProps) => {
                 {pkg.status}
               </TableCell>
               <TableCell className="text-center border border-zinc-200 space-x-2">
-                <Button variant="outline" size="sm">
-                  Detail
-                </Button>
+                <Link href={`/dashboard/package/detail-package/${pkg.id}`}>
+                  <Button variant="outline" size="sm">
+                    Detail
+                  </Button>
+                </Link>
                 <Button variant="outline" size="sm">
                   Update
                 </Button>

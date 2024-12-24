@@ -48,8 +48,7 @@ const AddPackageForm = ({ dataBenefits }: GetBenefitsProps) => {
     e.preventDefault();
 
     try {
-      setIsLoading(true);
-
+      setIsLoading(true)
       const formData = new FormData();
 
       formData.append("p_plan", isFormData.plan);

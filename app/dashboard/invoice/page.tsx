@@ -37,7 +37,7 @@ const Invoice = async () => {
   const session = await auth();
   return (
     <div>
-      <div className="p-6">{session?.user.role === "users" ? <InvoiceUser invUserData={data} /> : <InvoiceAdmin />}</div>
+      <div className="p-6">{session?.user.role === "users" ? <InvoiceUser invUserData={data} /> : <InvoiceAdmin invUserData={data} />}</div>
     </div>
   );
 };

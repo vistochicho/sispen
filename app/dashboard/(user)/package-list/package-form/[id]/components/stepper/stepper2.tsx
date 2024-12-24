@@ -80,10 +80,10 @@ const Step2 = ({ handlePrevious, handleSubmit, isFormData, isPackageData }: Step
           <div className="flex flex-col space-y-2">
             {benefits && benefits.length > 0 && (
               <>
-                {benefits.map((dataBonus, i) => (
+                {benefits.map((dataBonus: any, i: any) => (
                   <span key={i} className="text-base text-zinc-400 flex items-center">
                     <FaDotCircle className="size-4 mr-2 text-zinc-400" />
-                    {dataBonus}
+                    {dataBonus.name}
                   </span>
                 ))}
               </>

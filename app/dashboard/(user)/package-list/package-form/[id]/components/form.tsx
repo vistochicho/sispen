@@ -41,7 +41,7 @@ const FormPackage = ({ id, dataPackage }: PackageDataProps) => {
   });
   const [isStepper, setIsStepper] = useState<number>(1);
   const step = ["step 1", "step 2", "step 3"];
-  const [isCount, setIsCount] = useState<number>(10);
+  const [isCount, setIsCount] = useState<number>(5);
 
   useEffect(() => {
     const item = dataPackage.find((d) => d.id === id);

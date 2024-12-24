@@ -9,7 +9,7 @@ interface InvoiceDetailProps {
   invoiceData: GetInvUserDet[];
 }
 
-const InvoiceDetail = ({ invoiceData }: InvoiceDetailProps) => {
+const InvoiceDetail = async ({ invoiceData }: InvoiceDetailProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
   return (
@@ -24,7 +24,7 @@ const InvoiceDetail = ({ invoiceData }: InvoiceDetailProps) => {
           Print
         </button>
       </div>
-      <PrintContent ref={contentRef} invoiceData={invoiceData}/>
+      <PrintContent ref={contentRef} invoiceData={invoiceData} />
     </>
   );
 };

@@ -87,11 +87,11 @@ const UpdatePackage = ({ dataPackage, dataBenefits }: GetPackageListProps) => {
     }
   };
 
-  console.log({
-    "Data New": newBenefits,
-    "Data Old": oldBenefits,
-    "Remove Old": removeBenefits,
-  });
+  // console.log({
+  //   "Data New": newBenefits,
+  //   "Data Old": oldBenefits,
+  //   "Remove Old": removeBenefits,
+  // });
 
   return (
     <>

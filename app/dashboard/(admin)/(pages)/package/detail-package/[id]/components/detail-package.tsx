@@ -30,19 +30,15 @@ const DetailPackage = ({ packageData }: GetPackageProps) => {
           </div>
           <div>
             <h2 className="text-xl font-medium">Benefits</h2>
-            {pkg.benefits && pkg.benefits.length > 0 ? (
-              <ul className="list-disc list-inside">
-                {pkg.benefits.map((benefit, index) => (
-                  <li key={index}>{benefit}</li>
-                ))}
-              </ul>
-            ) : (
-              <p>No benefits available.</p>
-            )}
+            <ul className="list-disc list-inside">
+              {pkg.benefits.map((item: any, index: any) => (
+                <li key={index}>{item.name}</li>
+              ))}
+            </ul>
           </div>
           <div className="flex gap-4 mt-4">
             <Link href="/dashboard/package">
-              <button className="border border-gray-300 px-4 py-2 rounded-md">Back to List</button>
+              <button className="border border-gray-300 px-4 py-2 rounded-md hover:bg-zinc-100">Back to List</button>
             </Link>
           </div>
         </div>

@@ -29,6 +29,8 @@ const DetailPage = async ({ params }: { params: { id: string } }) => {
 
   const data = await fetchPackageList();
 
+  console.log("data", data);
+
   return (
     <>
       <div className="bg-white h-auto">

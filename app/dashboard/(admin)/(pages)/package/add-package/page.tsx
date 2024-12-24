@@ -3,8 +3,6 @@ import AddPackageForm from "./components/add-package-form";
 import { headers } from "next/headers";
 
 const AddPackage = async () => {
-  const handleSubmit = () => {};
-
   const headerObj = await headers();
 
   const fetchBenefitsList = async (): Promise<GetBenefitsList[]> => {

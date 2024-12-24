@@ -48,7 +48,7 @@ const AddPackageForm = ({ dataBenefits }: GetBenefitsProps) => {
     e.preventDefault();
 
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const formData = new FormData();
 
       formData.append("p_plan", isFormData.plan);
@@ -59,9 +59,7 @@ const AddPackageForm = ({ dataBenefits }: GetBenefitsProps) => {
         formData.append("p_benefits[]", benefits);
       });
 
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/package/add/`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/package/add/`, formData);
 
       if (response.status === 200) {
         setNotification({ type: "success", message: "Form Inputted successfully!" });

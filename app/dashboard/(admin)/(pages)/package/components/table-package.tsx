@@ -97,9 +97,11 @@ const TablePackage = ({ dataPackage }: PackageProps) => {
                     Detail
                   </Button>
                 </Link>
-                <Button variant="outline" size="sm">
-                  Update
-                </Button>
+                <Link href={`/dashboard/package/update-package/${pkg.id}`}>
+                  <Button variant="outline" size="sm">
+                    Update
+                  </Button>
+                </Link>
                 <Button variant="outline" size="sm" onClick={() => handleDelete(pkg.id)}>
                   Delete
                 </Button>

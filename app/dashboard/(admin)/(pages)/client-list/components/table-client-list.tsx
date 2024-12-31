@@ -42,7 +42,7 @@ const TableClientList = ({ dataClient }: ClientProps) => {
             <TableHead>Selected Business Entities</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone Number</TableHead>
-            <TableHead>Business Field</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead className="text-center">Action</TableHead>
           </TableRow>
         </TableHeader>

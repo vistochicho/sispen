@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -8,14 +9,46 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 // Dummy data sesuai dengan header tabel
 interface ClientProps {
   dataClient: GetClientList[];
 }
 
-const TableNeedReview = async ({ dataClient }: ClientProps) => {
-  const handleSubmit = () => {};
+const TableNeedReview = ({ dataClient }: ClientProps) => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const handleSubmit = async (id: string) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/client/patch/${id}`, {
+        applicant_id: id,
+        p_status: "On Process",
+      });
+
+      if (response.status === 200) {
+        setNotification({ type: "success", message: "Customer Approved Successfully!" });
+
+        toast.success("Customer Successfully Approved!");
+        router.refresh();
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      setNotification({
+        type: "error",
+        message: error.response?.data?.message || "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+      // Hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
 
   return (
     <div className="p-4">
@@ -62,7 +95,7 @@ const TableNeedReview = async ({ dataClient }: ClientProps) => {
                   <TableCell className="border border-zinc-200">{company.status}</TableCell>
                   <TableCell className="text-center border-zinc-200">
                     <div className="space-x-2">
-                      <Button variant="outline" size="sm" className="bg-blue-400 text-white">
+                      <Button variant="outline" size="sm" className="bg-blue-400 text-white" onClick={() => handleSubmit(company.id)}>
                         Approve
                       </Button>
                       <Link href={`/dashboard/customer/detail-customer/${company.id}`}>

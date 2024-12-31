@@ -7,52 +7,13 @@ import { Button } from "@/components/ui/button"; // Import ShadCN button
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
-// Dummy data sesuai dengan header tabel
-const companies = [
-  {
-    name: "Tech Solutions Ltd.",
-    applicant: "John Doe",
-    businessEntity: "LLC",
-    email: "john.doe@example.com",
-    phoneNumber: "+62 812 3456 7890",
-    businessField: "Software Development",
-  },
-  {
-    name: "Green Energy Corp.",
-    applicant: "Jane Smith",
-    businessEntity: "Corporation",
-    email: "jane.smith@example.com",
-    phoneNumber: "+62 813 9876 5432",
-    businessField: "Renewable Energy",
-  },
-  {
-    name: "Fresh Foods Co.",
-    applicant: "Emily Johnson",
-    businessEntity: "Partnership",
-    email: "emily.johnson@example.com",
-    phoneNumber: "+62 821 2345 6789",
-    businessField: "Food and Beverage",
-  },
-  {
-    name: "AutoTech Inc.",
-    applicant: "Michael Brown",
-    businessEntity: "Corporation",
-    email: "michael.brown@example.com",
-    phoneNumber: "+62 822 5678 1234",
-    businessField: "Automotive Technology",
-  },
-  {
-    name: "EduPro Ltd.",
-    applicant: "Sarah Williams",
-    businessEntity: "LLC",
-    email: "sarah.williams@example.com",
-    phoneNumber: "+62 823 4567 8910",
-    businessField: "Education Services",
-  },
-];
+interface ClientProps {
+  dataClient: GetClientList[];
+}
 
-const TableOnProgress = () => {
+const TableOnProgress = ({ dataClient }: ClientProps) => {
   return (
     <div className="p-4">
       <div className="flex justify-between  items-center mb-4">
@@ -86,24 +47,31 @@ const TableOnProgress = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {companies.map((company, index) => (
-            <TableRow key={index}>
-              <TableCell className="font-medium border-zinc-200">{company.name}</TableCell>
-              <TableCell className="border border-zinc-200">{company.applicant}</TableCell>
-              <TableCell className="border border-zinc-200">{company.businessEntity}</TableCell>
-              <TableCell className="border border-zinc-200">{company.email}</TableCell>
-              <TableCell className="border border-zinc-200">{company.phoneNumber}</TableCell>
-              <TableCell className="border border-zinc-200">{company.businessField}</TableCell>
-              <TableCell className="text-center border-zinc-200 space-x-2">
-                <Button variant="outline" size="sm">
-                  Detail
-                </Button>
-                <Button variant="outline" size="sm">
-                  Finish
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {dataClient.map(
+            (company, index) =>
+              company.status === "On Process" && (
+                <TableRow key={index}>
+                  <TableCell className="font-medium border-zinc-200">{company.company_name}</TableCell>
+                  <TableCell className="border border-zinc-200">{company.full_name}</TableCell>
+                  <TableCell className="border border-zinc-200">{company.company_type}</TableCell>
+                  <TableCell className="border border-zinc-200">{company.email}</TableCell>
+                  <TableCell className="border border-zinc-200">{company.phone_number}</TableCell>
+                  <TableCell className="border border-zinc-200">{company.status}</TableCell>
+                  <TableCell className="text-center border-zinc-200">
+                    <div className="space-x-2">
+                      <Button variant="outline" size="sm" className="bg-blue-400 text-white">
+                        Approve
+                      </Button>
+                      <Link href={`/dashboard/customer/detail-customer/${company.id}`}>
+                        <Button variant="outline" size="sm">
+                          Detail
+                        </Button>
+                      </Link>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+          )}
         </TableBody>
       </Table>
       <div className="mt-10">

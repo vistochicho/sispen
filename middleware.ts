@@ -13,6 +13,8 @@ export default middleware((req) => {
     "/dashboard/package/add-package",
     "/dashboard/package/detail-package/*",
     "/dashboard/package/update-package/*",
+    "/dashboard/customer/",
+    "/dashboard/customer/detail-customer/*",
     "/dashboard/request-legality/need-review",
     "/dashboard/request-legality/on-progress",
     "/dashboard/client-list",

@@ -26,7 +26,7 @@ const InvoiceAdmin = ({ invUserData }: InvoiceProps) => {
       });
 
       if (response.status === 200) {
-        setNotification({ type: "success", message: "User registered successfully!" });
+        setNotification({ type: "success", message: "Invoice Paid Successfully!" });
 
         toast.success("Invoice Successfully Paid!");
         router.refresh();

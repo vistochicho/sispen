@@ -1,4 +1,3 @@
-"use client";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

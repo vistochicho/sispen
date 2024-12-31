@@ -140,7 +140,7 @@ const FormPackage = ({ id, dataPackage }: PackageDataProps) => {
         formData.append("p_npwp", isNpwp);
       }
 
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/applicant/`, formData, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/applicant/insert`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

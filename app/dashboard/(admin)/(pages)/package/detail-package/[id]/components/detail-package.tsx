@@ -10,7 +10,12 @@ const DetailPackage = ({ packageData }: GetPackageProps) => {
   return (
     <>
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Package Details</h1>
+        <div className="space-y-2 pb-6">
+          <h2 className="font-semibold text-lg leading-7">Detail Customer</h2>
+          <p className="text-sm">
+            View and manage your invoices with ease. Track payment statuses, review details, and stay updated on your billing history, all in one place.
+          </p>
+        </div>
         <div className="space-y-4">
           <div>
             <h2 className="text-xl font-medium">Plan Name</h2>

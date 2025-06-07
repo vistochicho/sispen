@@ -15,14 +15,14 @@ const Encrypt = async () => {
 
       if (response.ok) {
         const data = await response.json();
-
+        return data.data as GetEncrypt[];
         // Periksa apakah response sukses dan mengandung decryptedData
-        if (data.success && Array.isArray(data.decryptedData)) {
-          return data.decryptedData as GetEncrypt[];
-        } else {
-          console.error("Invalid response format or missing decryptedData:", data);
-          return [];
-        }
+        // if (data.success && Array.isArray(data.decryptedData)) {
+        //   return data.data as GetEncrypt[];
+        // } else {
+        //   console.error("Invalid response format or missing decryptedData:", data);
+        //   return [];
+        // }
       } else {
         console.error(`Failed to fetch encrypt data: ${response.statusText}`);
         return [];

@@ -18,17 +18,49 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [isFormData, setIsFormData] = useState({
+    photo: "",
     full_name: "",
+    email: "",
     phone_number: "",
     address: "",
+    ktp: "",
+    kk: "",
+    npwp: "",
+    company_type: "",
+    company_name: "",
+    company_address: "",
+    kbli: "",
+    company_phone_number: "",
+    company_fax_number: "",
+    company_authorized_capital: "",
+    company_paid_up_capital: "",
+    company_executives: "",
   });
 
   const [isFormDataUpdate, setIsFormDataUpdate] = useState({
-    id: "",
+    photo: "",
     full_name: "",
+    email: "",
     phone_number: "",
     address: "",
+    ktp: "",
+    kk: "",
+    npwp: "",
+    company_type: "",
+    company_name: "",
+    company_address: "",
+    kbli: "",
+    company_phone_number: "",
+    company_fax_number: "",
+    company_authorized_capital: "",
+    company_paid_up_capital: "",
+    company_executives: "",
   });
+  const [isPhoto, setIsPhoto] = useState<File | null>(null);
+  const [isKtp, setIsKtp] = useState<File | null>(null);
+  const [isNpwp, setIsNpwp] = useState<File | null>(null);
+  const [isKk, setIsKk] = useState<File | null>(null);
+  const [isSelected, setIsSelected] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -36,6 +68,50 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, field: "photo" | "ktp" | "kk" | "npwp"): void => {
+    const file = event.target.files?.[0]; // Ambil file pertama dari input
+
+    if (file) {
+      // Validasi ukuran file (maksimum 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File terlalu besar. Maksimal ukuran adalah 5MB.");
+        return;
+      }
+
+      // Buat URL sementara untuk file
+      const fileUrl = URL.createObjectURL(file);
+
+      // Perbarui state dengan URL file sementara
+      setIsFormData((prev) => ({
+        ...prev,
+        [field]: fileUrl, // Simpan URL file sementara ke field yang sesuai
+      }));
+
+      // Simpan file asli ke state jika diperlukan
+      switch (field) {
+        case "photo":
+          setIsPhoto(file);
+          break;
+        case "ktp":
+          setIsKtp(file);
+          break;
+        case "kk":
+          setIsKk(file);
+          break;
+        case "npwp":
+          setIsNpwp(file);
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
+  const handleSelect = (value: string) => {
+    // Update the form data with the selected value for company_choice
+    setIsSelected(value);
   };
 
   const handleUpdateChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -54,8 +130,24 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
       const formData = new FormData();
 
       formData.append("p_full_name", isFormData.full_name);
+      formData.append("p_email", isFormData.email);
       formData.append("p_phone_number", isFormData.phone_number);
       formData.append("p_address", isFormData.address);
+      formData.append("p_company_type", isSelected);
+      formData.append("p_company_name", isFormData.company_name);
+      formData.append("p_company_address", isFormData.company_address);
+      formData.append("p_company_kbli", isFormData.kbli);
+      formData.append("p_company_phone_number", isFormData.company_phone_number);
+      formData.append("p_company_authorized_capital", isFormData.company_authorized_capital);
+      formData.append("p_company_paid_up_capital", isFormData.company_paid_up_capital);
+      formData.append("p_company_executives", isFormData.company_executives);
+      formData.append("p_company_fax_number", isFormData.company_fax_number);
+      if (isPhoto instanceof File && isKtp instanceof File && isKk instanceof File && isNpwp instanceof File) {
+        formData.append("p_photo", isPhoto);
+        formData.append("p_ktp", isKtp);
+        formData.append("p_kk", isKk);
+        formData.append("p_npwp", isNpwp);
+      }
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/encrypt/add/`, formData);
 
@@ -64,9 +156,23 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
         toast.success("Encrypt Inputted Successfully!");
         // Clear the form data
         setIsFormData({
+          photo: "",
           full_name: "",
+          email: "",
           phone_number: "",
           address: "",
+          ktp: "",
+          kk: "",
+          npwp: "",
+          company_type: "",
+          company_name: "",
+          company_address: "",
+          kbli: "",
+          company_phone_number: "",
+          company_fax_number: "",
+          company_authorized_capital: "",
+          company_paid_up_capital: "",
+          company_executives: "",
         });
 
         setTimeout(() => router.push("/dashboard/encrypt/"), 2000);
@@ -85,56 +191,68 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
   };
 
   // **Penambahan handleOpenUpdateDialog untuk dekripsi data**
-  const handleOpenUpdateDialog = (encrypt: GetEncrypt) => {
-    setIsFormDataUpdate({
-      id: encrypt.id,
-      full_name: encrypt.full_name, // Dekripsi full_name
-      phone_number: encrypt.phone_number, // Dekripsi phone_number
-      address: encrypt.address, // Dekripsi address
-    });
-  };
+  // const handleOpenUpdateDialog = (encrypt: GetEncrypt) => {
+  //   setIsFormDataUpdate({
+  //     photo: encrypt.photo,
+  //     full_name: encrypt.full_name, // Dekripsi full_name
+  //     email: encrypt.email,
+  //     phone_number: encrypt.phone_number, // Dekripsi phone_number
+  //     address: encrypt.address, // Dekripsi address
+  //     ktp: encrypt.ktp,
+  //     kk: encrypt.kk,
+  //     npwp: encrypt.npwp,
+  //     company_name: encrypt.company_name,
+  //     company_address: encrypt.company_address,
+  //     kbli: encrypt.kbli,
+  //     company_phone_number: encrypt.phone_number,
+  //     company_fax_number: encrypt.company_fax_number,
+  //     company_authorized_capital: encrypt.company_authorized_capital,
+  //     company_paid_up_capital: encrypt.company_paid_up_capital,
+  //     company_executives: encrypt.company_executives,
+  //   });
+  // };
 
-  const handleUpdateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleUpdateSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
 
-    // Start loading state
-    setIsLoading(true);
+  //   // Start loading state
+  //   setIsLoading(true);
 
-    try {
-      // Prepare FormData
-      const formData = new FormData();
-      formData.append("p_full_name", isFormDataUpdate.full_name);
-      formData.append("p_phone_number", isFormDataUpdate.phone_number);
-      formData.append("p_address", isFormDataUpdate.address);
+  //   try {
+  //     // Prepare FormData
+  //     const formData = new FormData();
+  //     formData.append("p_full_name", isFormDataUpdate.full_name);
+  //     formData.append("p_phone_number", isFormDataUpdate.phone_number);
+  //     formData.append("p_address", isFormDataUpdate.address);
 
-      // Make the axios request
-      const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/encrypt/update/${isFormDataUpdate.id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", // Ensure proper content type
-        },
-      });
+  //     // Make the axios request
+  //     const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/encrypt/update/${isFormDataUpdate.id}`, formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data", // Ensure proper content type
+  //       },
+  //     });
 
-      if (response.status === 200) {
-        setNotification({ type: "success", message: "User updated successfully!" });
+  //     if (response.status === 200) {
+  //       setNotification({ type: "success", message: "User updated successfully!" });
 
-        toast.success("Data Successfully Updated!");
-        router.refresh();
-      }
-    } catch (error: any) {
-      // Handle error case
-      setNotification({
-        type: "error",
-        message: error.response?.data?.message || "Something went wrong. Please try again.",
-      });
-      console.error(error); // For debugging purposes
-    } finally {
-      // Always stop the loading state
-      setIsLoading(false);
+  //       toast.success("Data Successfully Updated!");
+  //       router.refresh();
+  //     }
+  //   } catch (error: any) {
+  //     // Handle error case
+  //     setNotification({
+  //       type: "error",
+  //       message: error.response?.data?.message || "Something went wrong. Please try again.",
+  //     });
+  //     console.error(error); // For debugging purposes
+  //   } finally {
+  //     // Always stop the loading state
+  //     setIsLoading(false);
 
-      // Hide notification after 3 seconds
-      setTimeout(() => setNotification(null), 3000);
-    }
-  };
+  //     // Hide notification after 3 seconds
+  //     setTimeout(() => setNotification(null), 3000);
+  //   }
+  // };
 
   const handleDelete = async (id: string) => {
     try {
@@ -170,7 +288,7 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
             <DialogTrigger asChild>
               <Button variant="outline">Add Encrypt</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[1225px]">
               <DialogHeader>
                 <DialogTitle>Add Encrypt</DialogTitle>
                 <DialogDescription>Make changes to your Encrypt here. Click save when you're done.</DialogDescription>
@@ -178,8 +296,14 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
               <form onSubmit={handleAddSubmit}>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="applicant" className="text-right">
-                      Name
+                    <Label htmlFor="photo" className="text-right">
+                      Photo
+                    </Label>
+                    <Input id="photo" name="photo" type="file" accept="image/*" className="col-span-3" onChange={(event) => handleFileChange(event, "photo")} />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="full_name" className="text-right">
+                      Full Name
                     </Label>
                     <Input
                       id="full_name"
@@ -192,7 +316,21 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
                     />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="phonenumber" className="text-right">
+                    <Label htmlFor="email" className="text-right">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="example@mail.com"
+                      className="col-span-3"
+                      value={isFormData.email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="phone_number" className="text-right">
                       Phone Number
                     </Label>
                     <Input
@@ -209,18 +347,148 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
                     <Label htmlFor="address" className="text-right">
                       Address
                     </Label>
-
                     <textarea
                       value={isFormData.address}
                       onChange={handleChange}
                       id="address"
                       name="address"
-                      autoComplete="address"
                       rows={3}
                       className="col-span-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400
-                    focus:ring-2 focus:ring-inset focus:ring-gray-900 sm:text-sm sm:leading-6"
+        focus:ring-2 focus:ring-inset focus:ring-gray-900 sm:text-sm sm:leading-6"
                       placeholder="Jl. Ceger Raya"
                     />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="ktp" className="text-right">
+                      KTP
+                    </Label>
+                    <Input id="ktp" name="ktp" type="file" accept="image/*" className="col-span-3" onChange={(event) => handleFileChange(event, "ktp")} />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="kk" className="text-right">
+                      KK
+                    </Label>
+                    <Input id="kk" name="kk" type="file" accept="image/*" className="col-span-3" onChange={(event) => handleFileChange(event, "kk")} />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="npwp" className="text-right">
+                      NPWP
+                    </Label>
+                    <Input id="npwp" name="npwp" type="file" accept="image/*" className="col-span-3" onChange={(event) => handleFileChange(event, "npwp")} />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="company_name" className="text-right">
+                      Company Name
+                    </Label>
+                    <Input
+                      id="company_name"
+                      name="company_name"
+                      type="text"
+                      placeholder="ABC Corp"
+                      className="col-span-3"
+                      value={isFormData.company_name}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="company_address" className="text-right">
+                      Company Address
+                    </Label>
+                    <Input
+                      id="company_address"
+                      name="company_address"
+                      type="text"
+                      placeholder="123 Business St."
+                      className="col-span-3"
+                      value={isFormData.company_address}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="kbli" className="text-right">
+                      KBLI
+                    </Label>
+                    <Input id="kbli" name="kbli" type="text" placeholder="12345" className="col-span-3" value={isFormData.kbli} onChange={handleChange} />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="company_phone_number" className="text-right">
+                      Company Phone Number
+                    </Label>
+                    <Input
+                      id="company_phone_number"
+                      name="company_phone_number"
+                      type="text"
+                      placeholder="620123456789"
+                      className="col-span-3"
+                      value={isFormData.company_phone_number}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="company_fax_number" className="text-right">
+                      Company Fax Number
+                    </Label>
+                    <Input
+                      id="company_fax_number"
+                      name="company_fax_number"
+                      type="text"
+                      placeholder="021123456"
+                      className="col-span-3"
+                      value={isFormData.company_fax_number}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="company_authorized_capital" className="text-right">
+                      Authorized Capital
+                    </Label>
+                    <Input
+                      id="company_authorized_capital"
+                      name="company_authorized_capital"
+                      type="text"
+                      placeholder="500000000"
+                      className="col-span-3"
+                      value={isFormData.company_authorized_capital}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="company_paid_up_capital" className="text-right">
+                      Paid-Up Capital
+                    </Label>
+                    <Input
+                      id="company_paid_up_capital"
+                      name="company_paid_up_capital"
+                      type="text"
+                      placeholder="250000000"
+                      className="col-span-3"
+                      value={isFormData.company_paid_up_capital}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="company_executives" className="text-right">
+                      Executives
+                    </Label>
+                    <textarea
+                      id="company_executives"
+                      name="company_executives"
+                      rows={3}
+                      className="col-span-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400
+        focus:ring-2 focus:ring-inset focus:ring-gray-900 sm:text-sm sm:leading-6"
+                      placeholder="John Doe, Jane Doe"
+                      value={isFormData.company_executives}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="flex flex-col md:col-span-2">
+                    <Label htmlFor="company_choice">Company of your choice</Label>
+                    <select id="company_choice" name="company_choice" onChange={(e) => handleSelect(e.target.value)} className="rounded-md border-gray-300">
+                      <option>-- Your Choice --</option>
+                      <option value="PT">Perseroan Terbatas (PT)</option>
+                      <option value="CV">Commanditaire Vennootschap (CV)</option>
+                      <option value="PMA">Penanaman Modal Asing (PMA)</option>
+                    </select>
                   </div>
                 </div>
                 <DialogFooter>
@@ -251,65 +519,169 @@ const TableEncrypt = ({ dataEncrypt }: GetEncryptProps) => {
                 <TableCell className="border border-zinc-200 space-x-2">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline" onClick={() => handleOpenUpdateDialog(request)}>
+                      {/* <Button variant="outline" onClick={() => handleOpenUpdateDialog(request)}>
                         Update
-                      </Button>
+                      </Button> */}
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                       <DialogHeader>
                         <DialogTitle>Update Encrypt</DialogTitle>
                         <DialogDescription>Make changes to your Encrypt here. Click save when you're done.</DialogDescription>
                       </DialogHeader>
-                      <form onSubmit={handleUpdateSubmit}>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="full_name" className="text-right">
-                              Name
-                            </Label>
+                      <form onSubmit={handleAddSubmit}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex flex-col">
+                            <Label htmlFor="photo">Photo</Label>
+                            <Input id="photo" name="photo" type="file" accept="image/*" onChange={(event) => handleFileChange(event, "photo")} />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="full_name">Full Name</Label>
                             <Input
                               id="full_name"
                               name="full_name"
                               type="text"
-                              placeholder="John Doe"
-                              className="col-span-3"
-                              value={isFormDataUpdate.full_name}
-                              onChange={handleUpdateChange}
+                              placeholder="Pedro Duarte"
+                              value={isFormData.full_name}
+                              onChange={handleChange}
                             />
                           </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="phone_number" className="text-right">
-                              Phone Number
-                            </Label>
+                          <div className="flex flex-col">
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" name="email" type="email" placeholder="example@mail.com" value={isFormData.email} onChange={handleChange} />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="phone_number">Phone Number</Label>
                             <Input
                               id="phone_number"
                               name="phone_number"
                               type="number"
                               placeholder="621234567890"
-                              className="col-span-3"
-                              value={isFormDataUpdate.phone_number}
-                              onChange={handleUpdateChange}
+                              value={isFormData.phone_number}
+                              onChange={handleChange}
                             />
                           </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="address" className="text-right">
-                              Address
-                            </Label>
-
+                          <div className="flex flex-col md:col-span-2">
+                            <Label htmlFor="address">Address</Label>
                             <textarea
-                              value={isFormDataUpdate.address}
-                              onChange={handleUpdateChange}
                               id="address"
                               name="address"
-                              autoComplete="address"
                               rows={3}
-                              className="col-span-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400
-                            focus:ring-2 focus:ring-inset focus:ring-gray-900 sm:text-sm sm:leading-6"
                               placeholder="Jl. Ceger Raya"
+                              value={isFormData.address}
+                              onChange={handleChange}
+                              className="resize-none"
                             />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="ktp">KTP</Label>
+                            <Input id="ktp" name="ktp" type="file" accept="image/*" onChange={(event) => handleFileChange(event, "ktp")} />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="kk">KK</Label>
+                            <Input id="kk" name="kk" type="file" accept="image/*" onChange={(event) => handleFileChange(event, "kk")} />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="npwp">NPWP</Label>
+                            <Input id="npwp" name="npwp" type="file" accept="image/*" onChange={(event) => handleFileChange(event, "npwp")} />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="company_name">Company Name</Label>
+                            <Input
+                              id="company_name"
+                              name="company_name"
+                              type="text"
+                              placeholder="ABC Corp"
+                              value={isFormData.company_name}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="company_address">Company Address</Label>
+                            <Input
+                              id="company_address"
+                              name="company_address"
+                              type="text"
+                              placeholder="123 Business St."
+                              value={isFormData.company_address}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="kbli">KBLI</Label>
+                            <Input id="kbli" name="kbli" type="text" placeholder="12345" value={isFormData.kbli} onChange={handleChange} />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="company_phone_number">Company Phone Number</Label>
+                            <Input
+                              id="company_phone_number"
+                              name="company_phone_number"
+                              type="text"
+                              placeholder="620123456789"
+                              value={isFormData.company_phone_number}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="company_fax_number">Company Fax Number</Label>
+                            <Input
+                              id="company_fax_number"
+                              name="company_fax_number"
+                              type="text"
+                              placeholder="021123456"
+                              value={isFormData.company_fax_number}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="company_authorized_capital">Authorized Capital</Label>
+                            <Input
+                              id="company_authorized_capital"
+                              name="company_authorized_capital"
+                              type="text"
+                              placeholder="500000000"
+                              value={isFormData.company_authorized_capital}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="company_paid_up_capital">Paid-Up Capital</Label>
+                            <Input
+                              id="company_paid_up_capital"
+                              name="company_paid_up_capital"
+                              type="text"
+                              placeholder="250000000"
+                              value={isFormData.company_paid_up_capital}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <Label htmlFor="company_executives">Executives</Label>
+                            <textarea
+                              id="company_executives"
+                              name="company_executives"
+                              rows={3}
+                              placeholder="John Doe, Jane Doe"
+                              value={isFormData.company_executives}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div className="flex flex-col md:col-span-2">
+                            <Label htmlFor="company_choice">Company of your choice</Label>
+                            <select
+                              id="company_choice"
+                              name="company_choice"
+                              onChange={(e) => handleSelect(e.target.value)}
+                              className="rounded-md border-gray-300"
+                            >
+                              <option>-- Your Choice --</option>
+                              <option value="PT">Perseroan Terbatas (PT)</option>
+                              <option value="CV">Commanditaire Vennootschap (CV)</option>
+                              <option value="PMA">Penanaman Modal Asing (PMA)</option>
+                            </select>
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit">Update</Button>
+                          <Button type="submit">Add</Button>
                         </DialogFooter>
                       </form>
                     </DialogContent>

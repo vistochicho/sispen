@@ -1,6 +1,22 @@
 type GetEncrypt = {
   id: string;
   full_name: string;
+  email: string;
   phone_number: string;
   address: string;
+  photo: File;
+  ktp: File;
+  kk: File;
+  npwp: File;
+  company_type: string;
+  company_name: string;
+  company_address: string;
+  kbli: string;
+  company_phone_number: string;
+  company_fax_number: string;
+  company_authorized_capital: string;
+  company_paid_up_capital: string;
+  company_executives: string;
+  company_message: string;
+  company_choice: string;
 };

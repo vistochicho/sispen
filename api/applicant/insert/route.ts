@@ -98,8 +98,8 @@ export const POST = auth(async function POST(req) {
     let kkFileName;
     let npwpFileName;
 
-    let startEncrypt;
-    let finalEncrypt;
+    // let startEncrypt;
+    // let finalEncrypt;
 
     if (photo && ktp && kk && npwp) {
       try {
@@ -180,8 +180,8 @@ export const POST = auth(async function POST(req) {
 
         const endTime = new Date();
 
-        startEncrypt = startTime;
-        finalEncrypt = endTime;
+        // startEncrypt = startTime;
+        // finalEncrypt = endTime;
       } catch (err) {
         console.error("Something Went Wrong", err);
       }
@@ -206,8 +206,8 @@ export const POST = auth(async function POST(req) {
       p_company_authorized_capital,
       p_company_paid_up_capital,
       p_company_executives,
-      p_start_encrypt: startEncrypt!.toISOString(),
-      p_final_encrypt: finalEncrypt!.toISOString(),
+      // p_start_encrypt: startEncrypt!.toISOString(),
+      // p_final_encrypt: finalEncrypt!.toISOString(),
       p_note,
       p_package_id, // Include the missing p_package_id
     });

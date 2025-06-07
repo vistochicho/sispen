@@ -5,7 +5,6 @@ import Joi from "joi";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import crypto from "crypto";
-import { start } from "repl";
 
 export const config = { api: { bodyParser: false } };
 
@@ -34,6 +33,30 @@ const schema = Joi.object({
 
 const encryptionKey: Buffer = Buffer.from(process.env.KEY_SECRET!, "utf-8");
 
+const encryptText = (plainText: string, key: Buffer): string => {
+  const iv = crypto.randomBytes(16); // generate IV
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  const encrypted = Buffer.concat([cipher.update(plainText, "utf-8"), cipher.final()]);
+  return iv.toString("hex") + ":" + encrypted.toString("hex");
+};
+
+const decryptText = (encryptedText: string, key: Buffer): string => {
+  const [ivHex, encryptedHex] = encryptedText.split(":");
+  const iv = Buffer.from(ivHex, "hex");
+  const encrypted = Buffer.from(encryptedHex, "hex");
+  const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+  const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+  return decrypted.toString("utf-8");
+};
+
+const encryptFile = (fileBuffer: Buffer, key: Buffer): Buffer => {
+  const iv = crypto.randomBytes(16); // generate IV
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  const encrypted = Buffer.concat([cipher.update(fileBuffer), cipher.final()]);
+  // prepend IV to the file
+  return Buffer.concat([iv, encrypted]);
+};
+
 export const POST = auth(async function POST(req) {
   if (req.auth) {
     const roleId = req.auth.user.roleid;
@@ -42,25 +65,24 @@ export const POST = auth(async function POST(req) {
     }
 
     const formData = await req.formData();
-    const body = Object.fromEntries(formData);
 
-    const {
-      p_full_name,
-      p_email,
-      p_phone_number,
-      p_address,
-      p_company_type,
-      p_company_name,
-      p_company_address,
-      p_company_kbli,
-      p_company_phone_number,
-      p_company_fax_number,
-      p_company_authorized_capital,
-      p_company_paid_up_capital,
-      p_company_executives,
-      p_note,
-      p_package_id,
-    } = body;
+    // Manual get + casting
+    const p_full_name = formData.get("p_full_name") as string;
+    const p_email = formData.get("p_email") as string;
+    const p_phone_number = parseInt(formData.get("p_phone_number") as string, 10);
+    const p_address = formData.get("p_address") as string;
+    const p_company_type = formData.get("p_company_type") as string;
+    const p_company_name = formData.get("p_company_name") as string;
+    const p_company_address = formData.get("p_company_address") as string;
+    const p_company_kbli = formData.get("p_company_kbli") as string;
+    const p_company_phone_number = parseInt(formData.get("p_company_phone_number") as string, 10);
+    const p_company_fax_number_raw = formData.get("p_company_fax_number") as string | null;
+    const p_company_fax_number = p_company_fax_number_raw ? parseInt(p_company_fax_number_raw, 10) : null;
+    const p_company_authorized_capital = parseInt(formData.get("p_company_authorized_capital") as string, 10);
+    const p_company_paid_up_capital = parseInt(formData.get("p_company_paid_up_capital") as string, 10);
+    const p_company_executives = formData.get("p_company_executives") as string;
+    const p_note = formData.get("p_note") as string | null;
+    const p_package_id = formData.get("p_package_id") as string;
 
     const photo = formData.get("p_photo") as File;
     const ktp = formData.get("p_ktp") as File;
@@ -98,20 +120,8 @@ export const POST = auth(async function POST(req) {
     let kkFileName;
     let npwpFileName;
 
-    let startEncrypt;
-    let finalEncrypt;
-
     if (photo && ktp && kk && npwp) {
       try {
-        const startTime = new Date();
-
-        const encryptFile = (fileBuffer: Buffer, encryptionKey: Buffer): Buffer => {
-          // Create a new cipher instance for each file
-          // encrypt file
-          const cipher = crypto.createCipheriv("aes-256-ctr", encryptionKey, Buffer.alloc(16, 0));
-          return Buffer.concat([cipher.update(fileBuffer), cipher.final()]);
-        };
-
         const fileBufferPhoto = Buffer.from(await photo.arrayBuffer());
         const fileBufferKtp = Buffer.from(await ktp.arrayBuffer());
         const fileBufferKk = Buffer.from(await kk.arrayBuffer());
@@ -121,16 +131,6 @@ export const POST = auth(async function POST(req) {
         const encryptedKtp = encryptFile(fileBufferKtp, encryptionKey);
         const encryptedKk = encryptFile(fileBufferKk, encryptionKey);
         const encryptedNpwp = encryptFile(fileBufferNpwp, encryptionKey);
-
-        // const extensionPhoto = path.extname(photo.name);
-        // const extensionktp = path.extname(ktp.name);
-        // const extensionkk = path.extname(kk.name);
-        // const extensionnpwp = path.extname(npwp.name);
-
-        // const uniqueFileNamePhoto = `${uuidv4()} ${extensionPhoto}`;
-        // const uniqueFileNameKtp = `${uuidv4()} ${extensionktp}`;
-        // const uniqueFileNameKk = `${uuidv4()} ${extensionkk}`;
-        // const uniqueFileNameNpwp = `${uuidv4()} ${extensionnpwp}`;
 
         const uniqueFileNamePhoto = `${uuidv4()}.enc`;
         const uniqueFileNameKtp = `${uuidv4()}.enc`;
@@ -161,69 +161,98 @@ export const POST = auth(async function POST(req) {
           },
         ];
 
-        const uploadPromise = files.map(({ path, file }) => {
+        const uploadPromise = files.map(({ path, file }) =>
           supabase.storage.from("folder").upload(path, file, {
             cacheControl: "0",
             upsert: false,
-          });
+          })
+        );
+
+        const uploadResults = await Promise.all(uploadPromise);
+
+        uploadResults.forEach(({ error }, idx) => {
+          if (error) {
+            throw new Error(`Upload failed for file: ${files[idx].path} - ${error.message}`);
+          }
         });
-
-        // const uploadResult = await Promise.all(uploadPromise);
-
-        // uploadResult.forEach(({ data, error }: any, index) => {
-        //   if (error) {
-        //     console.error(`Error on Upload ${files[index].path}`, error.message);
-        //   } else {
-        //     console.log(`Success on Upload ${files[index].path}`);
-        //   }
-        // });
-
-        const endTime = new Date();
-
-        startEncrypt = startTime;
-        finalEncrypt = endTime;
       } catch (err) {
         console.error("Something Went Wrong", err);
       }
     }
 
-    // Call the insert_applicant function and handle applicant and invoice creation
-    const { data: applicantData, error: applicantError } = await supabase.rpc("insert_applicant", {
+    // Encrypt text fields
+    const encrypted_full_name = encryptText(p_full_name, encryptionKey);
+    const encrypted_email = encryptText(p_email, encryptionKey);
+    const encrypted_phone_number = encryptText(p_phone_number.toString(), encryptionKey);
+    const encrypted_address = encryptText(p_address, encryptionKey);
+    const encrypted_company_type = encryptText(p_company_type, encryptionKey);
+    const encrypted_company_name = encryptText(p_company_name, encryptionKey);
+    const encrypted_company_address = encryptText(p_company_address, encryptionKey);
+    const encrypted_company_kbli = encryptText(p_company_kbli, encryptionKey);
+    const encrypted_company_phone_number = encryptText(p_company_phone_number.toString(), encryptionKey);
+    const encrypted_company_fax_number = p_company_fax_number !== null ? encryptText(p_company_fax_number.toString(), encryptionKey) : null;
+    const encrypted_company_authorized_capital = encryptText(p_company_authorized_capital.toString(), encryptionKey);
+    const encrypted_company_paid_up_capital = encryptText(p_company_paid_up_capital.toString(), encryptionKey);
+    const encrypted_company_executives = encryptText(p_company_executives, encryptionKey);
+    const encrypted_note = p_note ? encryptText(p_note, encryptionKey) : null;
+
+    // Test decrypt on p_full_name to compare with original value
+    console.log("Encrypted p_full_name:", encrypted_full_name);
+    const decryptedFullName = decryptText(encrypted_full_name, encryptionKey);
+    console.log("Decrypted p_full_name:", decryptedFullName);
+
+    const applicantPayload = {
       p_photo: photoFileName,
-      p_full_name,
-      p_email,
-      p_phone_number,
-      p_address,
+      p_full_name: encrypted_full_name,
+      p_email: encrypted_email,
+      p_phone_number: encrypted_phone_number,
+      p_address: encrypted_address,
       p_ktp: ktpFileName,
       p_npwp: npwpFileName,
       p_kk: kkFileName,
-      p_company_type,
-      p_company_name,
-      p_company_address,
-      p_company_kbli,
-      p_company_phone_number,
-      p_company_fax_number,
-      p_company_authorized_capital,
-      p_company_paid_up_capital,
-      p_company_executives,
-      p_start_encrypt: startEncrypt!.toISOString(),
-      p_final_encrypt: finalEncrypt!.toISOString(),
-      p_note,
-      p_package_id, // Include the missing p_package_id
+      p_company_type: encrypted_company_type,
+      p_company_name: encrypted_company_name,
+      p_company_address: encrypted_company_address,
+      p_company_kbli: encrypted_company_kbli,
+      p_company_phone_number: encrypted_company_phone_number,
+      p_company_fax_number: encrypted_company_fax_number,
+      p_company_authorized_capital: encrypted_company_authorized_capital,
+      p_company_paid_up_capital: encrypted_company_paid_up_capital,
+      p_company_executives: encrypted_company_executives,
+      p_note: encrypted_note,
+      p_package_id,
+    };
+
+    console.log("Data to insert:", applicantPayload);
+
+    const { data: applicantData, error: applicantError } = await supabase.rpc("insert_applicant", {
+      p_photo: photoFileName,
+      p_full_name: encrypted_full_name,
+      p_email: encrypted_email,
+      p_phone_number: encrypted_phone_number,
+      p_address: encrypted_address,
+      p_ktp: ktpFileName,
+      p_npwp: npwpFileName,
+      p_kk: kkFileName,
+      p_company_type: encrypted_company_type,
+      p_company_name: encrypted_company_name,
+      p_company_address: encrypted_company_address,
+      p_company_kbli: encrypted_company_kbli,
+      p_company_phone_number: encrypted_company_phone_number,
+      p_company_fax_number: encrypted_company_fax_number,
+      p_company_authorized_capital: encrypted_company_authorized_capital,
+      p_company_paid_up_capital: encrypted_company_paid_up_capital,
+      p_company_executives: encrypted_company_executives,
+      p_note: encrypted_note,
+      p_package_id,
+      p_created_by: req.auth.user.id,
     });
 
     if (applicantError) {
-      console.error(applicantError);
-      return NextResponse.json({ success: false, message: "Error inserting applicant" }, { status: 500 });
+      return NextResponse.json({ success: false, message: applicantError.message }, { status: 400 });
     }
 
-    // Check if we received data
-    console.log("Supabase Data Response:", applicantData); // Log data to verify
-    console.log("Supabase Error:", applicantError); // Log the error (if any)
-
-    // Return the invoice ID as the response
-    return NextResponse.json({ success: true, data: applicantData }, { status: 200 });
+    return NextResponse.json({ success: true, message: "Data Inserted Successfully", data: applicantData });
   }
-
   return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
 });

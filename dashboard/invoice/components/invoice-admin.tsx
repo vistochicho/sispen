@@ -104,7 +104,7 @@ const InvoiceAdmin = ({ invUserData }: InvoiceProps) => {
                 <TableCell className="text-center border border-zinc-200 space-x-2">
                   {request.status == "Pending" && (
                     <Button variant="outline" size="sm" className="bg-blue-400 text-white" onClick={() => handleSubmit(request.id)} value="Paid">
-                      Accept
+                      Approve
                     </Button>
                   )}
                   <Link href={`/dashboard/invoice/detail/${request.id}`}>

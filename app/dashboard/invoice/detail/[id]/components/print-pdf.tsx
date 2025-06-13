@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import React, { forwardRef } from "react";
 
@@ -120,7 +121,5 @@ export const PrintContent = forwardRef<HTMLDivElement, InvoiceDetailProps>(({ in
         <p className="italic">Please make the payment by the due date mentioned above. For any queries, contact support.</p>
       </div>
     </div>
-
-    
   );
 });

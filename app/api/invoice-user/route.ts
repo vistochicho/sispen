@@ -34,15 +34,15 @@ export const GET = auth(async function GET(req) {
       return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });
     }
 
-    console.log("RPC result => ", { data, error });
+    // console.log("RPC result => ", { data, error });
 
     const decryptedData = data.map((client: any) => {
       try {
         const company_name = decryptText(client.company_name, encryptionKey);
 
         // Log perbandingan encrypted vs decrypted untuk tiap field
-        console.log(`--- Decrypt invoice id=${client.id} ---`);
-        console.log("company_name:", { encrypted: client.company_name, decrypted: company_name });
+        // console.log(`--- Decrypt invoice id=${client.id} ---`);
+        // console.log("company_name:", { encrypted: client.company_name, decrypted: company_name });
 
         return {
           ...client,

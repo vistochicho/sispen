@@ -17,4 +17,5 @@ type GetClientDet = {
   package_name: string;
   package_price: BigInteger;
   package_description: string;
+  package_benefits?: { id: string; name: string }[];
 };

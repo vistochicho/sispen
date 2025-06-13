@@ -38,30 +38,15 @@ const DetailRequest = ({ packageData }: GetClientProps) => {
               <p>Description: {pkg.package_description}</p>
               <h3 className="font-semibold text-md">Bonus Package:</h3>
               <div className="space-y-4">
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <FaDotCircle className="size-4 mr-2 text-zinc-400" />
                   <span className="text-base text-zinc-400">Business License</span>
-                </div>
-                <div className="flex items-center">
-                  <FaDotCircle className="size-4 mr-2 text-zinc-400" />
-                  <span className="text-base text-zinc-400">Tax System</span>
-                </div>
-                <div className="flex items-center">
-                  <FaDotCircle className="size-4 mr-2 text-zinc-400" />
-                  <span className="text-base text-zinc-400">Company Profile</span>
-                </div>
-                <div className="flex items-center">
-                  <FaDotCircle className="size-4 mr-2 text-zinc-400" />
-                  <span className="text-base text-zinc-400">Free Company Website</span>
-                </div>
-                <div className="flex items-center">
-                  <FaDotCircle className="size-4 mr-2 text-zinc-400" />
-                  <span className="text-base text-zinc-400">Free Absent System</span>
-                </div>
-                <div className="flex items-center">
-                  <FaDotCircle className="size-4 mr-2 text-zinc-400" />
-                  <span className="text-base text-zinc-400">Free ERP System</span>
-                </div>
+                </div> */}
+                <ul className="list-disc list-inside">
+                  {pkg.package_benefits?.map((item: any, index: any) => (
+                    <li key={index}>{item.name}</li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>

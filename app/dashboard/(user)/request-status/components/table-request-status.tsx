@@ -61,7 +61,7 @@ const TableRequestStatus = ({ dataStatReq }: StatReqProps) => {
               <TableCell className="border border-zinc-200">{request.company_type}</TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
-                <Link href="/dashboard/request-status/detail/id">
+                <Link href={`/dashboard/request-status/detail/${request.id}`}>
                   <Button variant="outline" size="sm">
                     Detail
                   </Button>

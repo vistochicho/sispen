@@ -9,7 +9,7 @@ export const GET = auth(async function GET(req) {
       return NextResponse.json({ success: false, message: "Role ID not found" }, { status: 400 });
     }
 
-    const { data, error } = await supabase.rpc("get_status_request");
+    const { data, error } = await supabase.rpc("get_client");
 
     if (error) {
       return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });

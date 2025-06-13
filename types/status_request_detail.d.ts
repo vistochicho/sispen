@@ -1,4 +1,4 @@
-type GetClientList = {
+type GetClientDet = {
   id: string;
   status: string;
   full_name: string;
@@ -16,4 +16,5 @@ type GetClientList = {
   company_executives: string;
   package_name: string;
   package_price: BigInteger;
+  package_description: string;
 };

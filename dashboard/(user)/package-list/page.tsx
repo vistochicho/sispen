@@ -28,7 +28,7 @@ const PackageList = async () => {
 
   const data = await fetchPackageList();
 
-  console.log(data);
+  // console.log(data);
   return (
     <div className="p-6">
       <PackageListPage dataPackage={data} />

@@ -5,52 +5,12 @@ import { Button } from "@/components/ui/button";
 import { FaDotCircle, FaFilePdf } from "react-icons/fa";
 import ChatMessage from "./chat-message";
 
-const messages = [
-  {
-    avatar: "https://i.pravatar.cc/150?img=1", // Example avatar image URL
-    message: "Yes. Should we move it to next week?",
-    timestamp: "14:28",
-    isUser: false,
-  },
-  {
-    avatar: "https://i.pravatar.cc/150?img=2",
-    message: "Sure, whatever suits you. I'm free whenever.",
-    timestamp: "14:29",
-    isUser: true,
-  },
-  {
-    avatar: "https://i.pravatar.cc/150?img=1",
-    message: "And I'll update the calendar. I thought I already updated it.",
-    timestamp: "14:30",
-    isUser: false,
-  },
-  {
-    avatar: "https://i.pravatar.cc/150?img=2",
-    message: "It's all good fam.",
-    timestamp: "14:31",
-    isUser: true,
-  },
-  {
-    avatar: "https://i.pravatar.cc/150?img=1",
-    message: "I rescheduled it to every first Wednesday in the month. But we can do it next week whenever you want?",
-    timestamp: "14:32",
-    isUser: false,
-  },
-  {
-    avatar: "https://i.pravatar.cc/150?img=2",
-    message: "Cool bro. ✌️ Next Thursday at about 13:00?",
-    timestamp: "14:33",
-    isUser: true,
-  },
-  {
-    avatar: "https://i.pravatar.cc/150?img=1",
-    message: "Ok, I'll let you know.",
-    timestamp: "14:34",
-    isUser: false,
-  },
-];
+interface GetClientProps {
+  packageData: GetClientDet[];
+}
 
-const DetailRequest = () => {
+const DetailRequest = ({ packageData }: GetClientProps) => {
+  const pkg = packageData[0];
   return (
     <>
       <div className="bg-white">
@@ -65,19 +25,17 @@ const DetailRequest = () => {
           <div className="flex flex-row gap-6 pb-8">
             <div className="w-1/2 space-y-2">
               <h3 className="font-semibold text-md">Profile Information</h3>
-              <p>Name of Applicant: Oji Otot</p>
-              <p>Email: visto@gmail.com</p>
-              <p>Phone Number: +62 857-3456-7890</p>
-              <p>Address: Gedung Artha Graha, Jl. Jenderal Sudirman No.52-53, RT.5/RW.3, Senayan, Kebayoran Baru, South Jakarta City, Jakarta 12190</p>
+              <p>Name of Applicant: {pkg.full_name}</p>
+              <p>Email: {pkg.email}</p>
+              <p>Phone Number: {pkg.phone_number}</p>
+              <p>Address: {pkg.address}</p>
             </div>
 
             <div className="w-1/2 space-y-2">
               <h3 className="font-semibold text-md">Package Information</h3>
-              <p>Package: Package 2</p>
-              <p>
-                Description: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem excepturi, ea sint eveniet consequatur sit, odit velit nisi
-                voluptates quis perferendis, eos autem vero quo laborum officia? Qui, impedit facilis!
-              </p>
+              <p>Package: {pkg.package_name}</p>
+              <p>Description: {pkg.package_price}</p>
+              <p>Description: {pkg.package_description}</p>
               <h3 className="font-semibold text-md">Bonus Package:</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
@@ -142,38 +100,38 @@ const DetailRequest = () => {
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell className="border border-zinc-200">otot 1</TableCell>
-                <TableCell className="border border-zinc-200">otot 1</TableCell>
-                <TableCell className="border border-zinc-200">otot 1</TableCell>
-                <TableCell className="border border-zinc-200">otot 1</TableCell>
-                <TableCell className="border border-zinc-200">otot 1</TableCell>
-                <TableCell className="border border-zinc-200">otot 1</TableCell>
-                <TableCell className="border border-zinc-200">otot 1</TableCell>
-                <TableCell className="border border-zinc-200">otot 1</TableCell>
+                <TableCell className="border border-zinc-200">{pkg.company_name}</TableCell>
+                <TableCell className="border border-zinc-200">{pkg.company_address}</TableCell>
+                <TableCell className="border border-zinc-200">{pkg.company_kbli}</TableCell>
+                <TableCell className="border border-zinc-200">{pkg.company_phone_number}</TableCell>
+                <TableCell className="border border-zinc-200">{pkg.company_fax_number}</TableCell>
+                <TableCell className="border border-zinc-200">{pkg.company_authorized_capital}</TableCell>
+                <TableCell className="border border-zinc-200">{pkg.company_paid_up_capital}</TableCell>
+                <TableCell className="border border-zinc-200">{pkg.company_executives}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </div>
       </div>
-      <div>
+      {/* <div>
         <div className="mt-8 rounded-lg bg-white shadow-md relative">
           {/* Chat Messages */}
-          <div className="p-5 space-y-4 overflow-y-auto max-h-80">
+      {/* <div className="p-5 space-y-4 overflow-y-auto max-h-80">
             {messages.map((msg, index) => (
               <ChatMessage key={index} avatar={msg.avatar} message={msg.message} timestamp={msg.timestamp} isUser={msg.isUser} />
             ))}
-          </div>
+          </div> */}
 
-          {/* Input Field */}
-          <div className="p-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      {/* Input Field */}
+      {/* <div className="p-4 border-t border-gray-200 sticky bottom-0 bg-white">
             <input
               type="text"
               className="rounded-lg w-full border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Type a message..."
             />
-          </div>
-        </div>
-      </div>
+          </div> */}
+      {/* </div> */}
+      {/* </div> */}
     </>
   );
 };

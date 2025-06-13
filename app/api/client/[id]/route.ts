@@ -18,6 +18,9 @@ export const GET = auth(async (req, context) => {
     if (error) {
       return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });
     }
+
+    console.log("RPC result => ", { data, error });
+
     return NextResponse.json({ success: true, data }, { status: 200 });
   }
   return NextResponse.json({ success: false, message: "No Authorized" }, { status: 401 });

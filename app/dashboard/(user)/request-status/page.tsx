@@ -7,7 +7,7 @@ const RequestStatus = async () => {
 
   const fetchStatusRequest = async (): Promise<GetStatusRequest[]> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/status-request`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/client`, {
         method: "GET",
         cache: "no-store",
         headers: headerObj,

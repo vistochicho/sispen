@@ -18,4 +18,8 @@ type GetClientDet = {
   package_price: BigInteger;
   package_description: string;
   package_benefits?: { id: string; name: string }[];
+  photo: string | null;
+  ktp: string | null;
+  kk: string | null;
+  npwp: string | null;
 };

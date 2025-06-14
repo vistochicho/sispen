@@ -1,38 +1,37 @@
 import React from "react";
-import { headers } from "next/headers";
 import DetailRequest from "./components/request-detail";
+import { headers } from "next/headers";
 
-const DetailPage = async () => {
+const DetailPage = async ({ params }: { params: { id: string } }) => {
+  const { id } = await params;
+
   const headerObj = await headers();
 
-  const fetchDetailRequest = async (): Promise<GetClientDet[]> => {
+  const fetchClientList = async (): Promise<GetClientDet[]> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice-user`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/client/${id}`, {
         method: "GET",
         cache: "no-store",
-        headers: headerObj,
+        headers: Object.fromEntries(headerObj),
       });
       if (response.status === 200) {
         const data = await response.json();
-        // Map dates into Date objects
-        return data.data as [];
+        return data.data as GetClientDet[]; // Expecting a single package object
       } else {
-        console.error(`Failed to fetch menu items: ${response.statusText}`);
+        console.error(`Failed to fetch package details: ${response.statusText}`);
         return [];
       }
     } catch (error) {
-      console.error("Error fetching menu items:", error);
+      console.error("Error fetching package details:", error);
       return [];
     }
   };
 
-  const data = await fetchDetailRequest();
-
-  console.log("status request api", data);
+  const data = await fetchClientList();
 
   return (
-    <div>
-      <DetailRequest />
+    <div className="p-6">
+      <DetailRequest packageData={data} />
     </div>
   );
 };

@@ -48,22 +48,6 @@ export const GET = auth(async function GET(req, { params }) {
         const company_address = decryptText(client.company_address, encryptionKey);
         const company_phone_number = decryptText(client.company_phone_number, encryptionKey);
 
-        // Log perbandingan encrypted vs decrypted untuk tiap field
-        // console.log(`--- Decrypt client id=${client.id} ---`);
-        // console.log("full_name:", { encrypted: client.full_name, decrypted: full_name });
-        // console.log("email:", { encrypted: client.email, decrypted: email });
-        // console.log("phone_number:", { encrypted: client.phone_number, decrypted: phone_number });
-        // console.log("address:", { encrypted: client.address, decrypted: address });
-        // console.log("company_type:", { encrypted: client.company_type, decrypted: company_type });
-        // console.log("company_name:", { encrypted: client.company_name, decrypted: company_name });
-        // console.log("company_address:", { encrypted: client.company_address, decrypted: company_address });
-        // console.log("company_kbli:", { encrypted: client.company_kbli, decrypted: company_kbli });
-        // console.log("company_phone_number:", { encrypted: client.company_phone_number, decrypted: company_phone_number });
-        // console.log("company_fax_number:", { encrypted: client.company_fax_number, decrypted: company_fax_number });
-        // console.log("company_authorized_capital:", { encrypted: client.company_authorized_capital, decrypted: company_authorized_capital });
-        // console.log("company_paid_up_capital:", { encrypted: client.company_paid_up_capital, decrypted: company_paid_up_capital });
-        // console.log("company_executives:", { encrypted: client.company_executives, decrypted: company_executives });
-
         return {
           ...client,
           full_name,

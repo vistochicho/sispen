@@ -86,7 +86,7 @@ const TableCustomer = ({ dataClient }: ClientProps) => {
           <TableBody>
             {dataClient.map(
               (company, index) =>
-                company.status === "Pending" && (
+                company.status === "Awaiting Approval" && (
                   <TableRow key={index}>
                     <TableCell className="font-medium border-zinc-200">{company.company_name}</TableCell>
                     <TableCell className="border border-zinc-200">{company.full_name}</TableCell>

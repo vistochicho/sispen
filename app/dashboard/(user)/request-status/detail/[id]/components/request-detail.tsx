@@ -38,10 +38,6 @@ const DetailRequest = ({ packageData }: GetClientProps) => {
               <p>Description: {pkg.package_description}</p>
               <h3 className="font-semibold text-md">Bonus Package:</h3>
               <div className="space-y-4">
-                {/* <div className="flex items-center">
-                  <FaDotCircle className="size-4 mr-2 text-zinc-400" />
-                  <span className="text-base text-zinc-400">Business License</span>
-                </div> */}
                 <ul className="list-disc list-inside">
                   {pkg.package_benefits?.map((item: any, index: any) => (
                     <li key={index}>{item.name}</li>
@@ -51,21 +47,33 @@ const DetailRequest = ({ packageData }: GetClientProps) => {
             </div>
           </div>
 
-          <div className="space-y-2 pb-8">
+          <div className="space-y-4 pb-8">
             <h3 className="font-semibold text-md">Documents:</h3>
-            <div className="flex justify-between">
-              <div className="flex items-center">
-                <FaFilePdf className="size-4 mr-2 text-zinc-400" />
-                <span className="text-base text-zinc-400">KTP</span>
-              </div>
-              <div className="flex items-center">
-                <FaFilePdf className="size-4 mr-2 text-zinc-400" />
-                <span className="text-base text-zinc-400">KK</span>
-              </div>
-              <div className="flex items-center">
-                <FaFilePdf className="size-4 mr-2 text-zinc-400" />
-                <span className="text-base text-zinc-400">NPWP</span>
-              </div>
+            <div className="grid grid-cols-4  gap-4">
+              {pkg.photo && (
+                <div>
+                  <p className="text-sm font-medium text-zinc-500">photo</p>
+                  <img src={pkg.photo} alt="KTP" className="w-full border rounded shadow" />
+                </div>
+              )}
+              {pkg.ktp && (
+                <div>
+                  <p className="text-sm font-medium text-zinc-500">KTP</p>
+                  <img src={pkg.ktp} alt="KTP" className="w-full border rounded shadow" />
+                </div>
+              )}
+              {pkg.kk && (
+                <div>
+                  <p className="text-sm font-medium text-zinc-500">KK</p>
+                  <img src={pkg.kk} alt="KK" className="w-full border rounded shadow" />
+                </div>
+              )}
+              {pkg.npwp && (
+                <div>
+                  <p className="text-sm font-medium text-zinc-500">NPWP</p>
+                  <img src={pkg.npwp} alt="NPWP" className="w-full border rounded shadow" />
+                </div>
+              )}
             </div>
           </div>
 

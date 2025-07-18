@@ -69,7 +69,7 @@ const InvoiceUser = ({ invUserData }: InvoiceProps) => {
               </TableCell>
               <TableCell className="border border-zinc-200">{request.status}</TableCell>
               <TableCell className="text-center border border-zinc-200">
-                <Link href={`/dashboard/invoice/detail/${request.id}`}>
+                <Link href={`/dashboard/invoice-user/detail/${request.id}`}>
                   <Button variant="outline" size="sm">
                     Detail
                   </Button>

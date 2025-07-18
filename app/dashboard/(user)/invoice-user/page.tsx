@@ -2,14 +2,13 @@ import { auth } from "@/auth";
 import React from "react";
 import { headers } from "next/headers";
 import InvoiceUser from "./components/invoice-user";
-import InvoiceAdmin from "./components/invoice-admin";
 
 const Invoice = async () => {
   const headerObj = await headers();
 
   const fetchInvoiceUser = async (): Promise<GetInvoiceUser[]> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice-user`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice/user`, {
         method: "GET",
         cache: "no-store",
         headers: headerObj,
@@ -37,7 +36,9 @@ const Invoice = async () => {
   const session = await auth();
   return (
     <div>
-      <div className="p-6">{session?.user.role === "users" ? <InvoiceUser invUserData={data} /> : <InvoiceAdmin invUserData={data} />}</div>
+      <div className="p-6">
+        <InvoiceUser invUserData={data} />
+      </div>
     </div>
   );
 };

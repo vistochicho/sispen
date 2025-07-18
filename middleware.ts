@@ -5,7 +5,7 @@ export default middleware((req) => {
   const { pathname } = req.nextUrl;
 
   // Define paths
-  const pathUsers = ["/dashboard", "/dashboard/request-status", "/dashboard/package-list", "/dashboard/package-list/package-form/*", "/dashboard/invoice"];
+  const pathUsers = ["/dashboard", "/dashboard/request-status", "/dashboard/package-list", "/dashboard/package-list/package-form/*", "/dashboard/invoice-user"];
   const pathAdmin = [
     "/dashboard",
     "/dashboard/customer",
@@ -19,7 +19,7 @@ export default middleware((req) => {
     "/dashboard/request-legality/on-progress",
     "/dashboard/client-list",
     "/dashboard/user-management",
-    "/dashboard/invoice",
+    "/dashboard/invoice-admin",
   ];
 
   // Define Path Login etc

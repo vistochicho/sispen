@@ -107,7 +107,7 @@ const InvoiceAdmin = ({ invUserData }: InvoiceProps) => {
                       Accept
                     </Button>
                   )}
-                  <Link href={`/dashboard/invoice/detail/${request.id}`}>
+                  <Link href={`/dashboard/invoice-admin/detail/${request.id}`}>
                     <Button variant="outline" size="sm">
                       Detail
                     </Button>

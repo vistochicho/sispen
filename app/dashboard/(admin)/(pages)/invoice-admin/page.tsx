@@ -9,7 +9,7 @@ const Invoice = async () => {
 
   const fetchInvoiceUser = async (): Promise<GetInvoiceUser[]> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice/admin/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice`, {
         method: "GET",
         cache: "no-store",
         headers: headerObj,
@@ -37,7 +37,9 @@ const Invoice = async () => {
   const session = await auth();
   return (
     <div>
-      <div className="p-6">{session?.user.role === "users" ? <InvoiceUser invUserData={data} /> : <InvoiceAdmin invUserData={data} />}</div>
+      <div className="p-6">
+        <InvoiceAdmin invUserData={data} />
+      </div>
     </div>
   );
 };

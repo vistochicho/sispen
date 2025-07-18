@@ -56,8 +56,6 @@ export default async function DashboardLayout({
   const menuItems = await fetchMenuItem();
   const userData = await fetchUser();
 
-  console.log("test user", userData);
-
   return (
     <LayoutWrapper menuItems={menuItems} userData={userData!}>
       {children}

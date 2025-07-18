@@ -9,7 +9,7 @@ const DetailPage = async ({ params }: { params: { id: string } }) => {
   // Function to fetch invoice details using the 'id'
   const fetchInvoiceDetails = async (id: string): Promise<GetInvUserDet[]> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice-user/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice/${id}`, {
         method: "GET",
         cache: "no-store",
         headers: headerObj,

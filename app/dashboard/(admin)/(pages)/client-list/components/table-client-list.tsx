@@ -59,9 +59,9 @@ const TableClientList = ({ dataClient }: ClientProps) => {
                   <TableCell className="border border-zinc-200">{company.status}</TableCell>
                   <TableCell className="text-center border-zinc-200">
                     <div className="space-x-2">
-                      <Button variant="outline" size="sm" className="bg-blue-400 text-white">
+                      {/* <Button variant="outline" size="sm" className="bg-blue-400 text-white">
                         Approve
-                      </Button>
+                      </Button> */}
                       <Link href={`/dashboard/customer/detail-customer/${company.id}`}>
                         <Button variant="outline" size="sm">
                           Detail

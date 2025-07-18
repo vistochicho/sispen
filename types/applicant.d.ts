@@ -13,4 +13,9 @@ type GetApplicantList = {
   company_authorized_capital: BigInteger;
   company_paid_up_capital: BigInteger;
   company_executives: string;
+  // Tambahan untuk file (image)
+  photo?: string;
+  ktp?: string;
+  kk?: string;
+  npwp?: string;
 };

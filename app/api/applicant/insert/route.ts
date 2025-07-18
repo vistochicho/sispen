@@ -3,7 +3,7 @@ import { supabase } from "@/supabase";
 import { NextResponse } from "next/server";
 import Joi from "joi";
 import { v4 as uuidv4 } from "uuid";
-import path from "path";
+// import path from "path";
 import crypto from "crypto";
 
 export const config = { api: { bodyParser: false } };
@@ -40,15 +40,6 @@ const encryptText = (plainText: string, key: Buffer): string => {
   return iv.toString("hex") + ":" + encrypted.toString("hex");
 };
 
-const decryptText = (encryptedText: string, key: Buffer): string => {
-  const [ivHex, encryptedHex] = encryptedText.split(":");
-  const iv = Buffer.from(ivHex, "hex");
-  const encrypted = Buffer.from(encryptedHex, "hex");
-  const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
-  const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
-  return decrypted.toString("utf-8");
-};
-
 const encryptFile = (fileBuffer: Buffer, key: Buffer): Buffer => {
   const iv = crypto.randomBytes(16); // generate IV
   const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
@@ -56,6 +47,26 @@ const encryptFile = (fileBuffer: Buffer, key: Buffer): Buffer => {
   // prepend IV to the file
   return Buffer.concat([iv, encrypted]);
 };
+
+// Fungsi logging ukuran dan waktu
+function logEncryption(label: string, original: Buffer | string, encrypted: Buffer | string, timeMs: number) {
+  const originalSize = typeof original === "string" ? Buffer.byteLength(original, "utf-8") : original.length;
+  const encryptedSize = typeof encrypted === "string" ? Buffer.byteLength(encrypted, "utf-8") : encrypted.length;
+  console.log(`=== ${label} ===`);
+  console.log(`Ukuran Data Asli: ${originalSize} bytes`);
+  console.log(`Ukuran Data Terenkripsi: ${encryptedSize} bytes`);
+  console.log(`Waktu Enkripsi: ${timeMs.toFixed(3)} ms`);
+  console.log("============================\n");
+}
+
+// Bungkus enkripsi teks dengan logger waktu & ukuran
+function encryptWithLog(label: string, text: string, key: Buffer): string {
+  const start = performance.now();
+  const encrypted = encryptText(text, key);
+  const end = performance.now();
+  logEncryption(label, text, encrypted, end - start);
+  return encrypted;
+}
 
 export const POST = auth(async function POST(req) {
   if (req.auth) {
@@ -66,7 +77,6 @@ export const POST = auth(async function POST(req) {
 
     const formData = await req.formData();
 
-    // Manual get + casting
     const p_full_name = formData.get("p_full_name") as string;
     const p_email = formData.get("p_email") as string;
     const p_phone_number = parseInt(formData.get("p_phone_number") as string, 10);
@@ -127,10 +137,30 @@ export const POST = auth(async function POST(req) {
         const fileBufferKk = Buffer.from(await kk.arrayBuffer());
         const fileBufferNpwp = Buffer.from(await npwp.arrayBuffer());
 
+        // const encryptedPhoto = encryptFile(fileBufferPhoto, encryptionKey);
+        // const encryptedKtp = encryptFile(fileBufferKtp, encryptionKey);
+        // const encryptedKk = encryptFile(fileBufferKk, encryptionKey);
+        // const encryptedNpwp = encryptFile(fileBufferNpwp, encryptionKey);
+
+        const startPhoto = performance.now();
         const encryptedPhoto = encryptFile(fileBufferPhoto, encryptionKey);
+        const endPhoto = performance.now();
+        logEncryption("Photo", fileBufferPhoto, encryptedPhoto, endPhoto - startPhoto);
+
+        const startKtp = performance.now();
         const encryptedKtp = encryptFile(fileBufferKtp, encryptionKey);
+        const endKtp = performance.now();
+        logEncryption("KTP", fileBufferKtp, encryptedKtp, endKtp - startKtp);
+
+        const startKk = performance.now();
         const encryptedKk = encryptFile(fileBufferKk, encryptionKey);
+        const endKk = performance.now();
+        logEncryption("KK", fileBufferKk, encryptedKk, endKk - startKk);
+
+        const startNpwp = performance.now();
         const encryptedNpwp = encryptFile(fileBufferNpwp, encryptionKey);
+        const endNpwp = performance.now();
+        logEncryption("NPWP", fileBufferNpwp, encryptedNpwp, endNpwp - startNpwp);
 
         const uniqueFileNamePhoto = `${uuidv4()}.enc`;
         const uniqueFileNameKtp = `${uuidv4()}.enc`;
@@ -180,50 +210,37 @@ export const POST = auth(async function POST(req) {
       }
     }
 
-    // Encrypt text fields
-    const encrypted_full_name = encryptText(p_full_name, encryptionKey);
-    const encrypted_email = encryptText(p_email, encryptionKey);
-    const encrypted_phone_number = encryptText(p_phone_number.toString(), encryptionKey);
-    const encrypted_address = encryptText(p_address, encryptionKey);
-    const encrypted_company_type = encryptText(p_company_type, encryptionKey);
-    const encrypted_company_name = encryptText(p_company_name, encryptionKey);
-    const encrypted_company_address = encryptText(p_company_address, encryptionKey);
-    const encrypted_company_kbli = encryptText(p_company_kbli, encryptionKey);
-    const encrypted_company_phone_number = encryptText(p_company_phone_number.toString(), encryptionKey);
-    const encrypted_company_fax_number = p_company_fax_number !== null ? encryptText(p_company_fax_number.toString(), encryptionKey) : null;
-    const encrypted_company_authorized_capital = encryptText(p_company_authorized_capital.toString(), encryptionKey);
-    const encrypted_company_paid_up_capital = encryptText(p_company_paid_up_capital.toString(), encryptionKey);
-    const encrypted_company_executives = encryptText(p_company_executives, encryptionKey);
-    const encrypted_note = p_note ? encryptText(p_note, encryptionKey) : null;
+    // const encrypted_full_name = encryptText(p_full_name, encryptionKey);
+    // const encrypted_email = encryptText(p_email, encryptionKey);
+    // const encrypted_phone_number = encryptText(p_phone_number.toString(), encryptionKey);
+    // const encrypted_address = encryptText(p_address, encryptionKey);
+    // const encrypted_company_type = encryptText(p_company_type, encryptionKey);
+    // const encrypted_company_name = encryptText(p_company_name, encryptionKey);
+    // const encrypted_company_address = encryptText(p_company_address, encryptionKey);
+    // const encrypted_company_kbli = encryptText(p_company_kbli, encryptionKey);
+    // const encrypted_company_phone_number = encryptText(p_company_phone_number.toString(), encryptionKey);
+    // const encrypted_company_fax_number = p_company_fax_number !== null ? encryptText(p_company_fax_number.toString(), encryptionKey) : null;
+    // const encrypted_company_authorized_capital = encryptText(p_company_authorized_capital.toString(), encryptionKey);
+    // const encrypted_company_paid_up_capital = encryptText(p_company_paid_up_capital.toString(), encryptionKey);
+    // const encrypted_company_executives = encryptText(p_company_executives, encryptionKey);
+    // const encrypted_note = p_note ? encryptText(p_note, encryptionKey) : null;
 
-    // Test decrypt on p_full_name to compare with original value
-    console.log("Encrypted p_full_name:", encrypted_full_name);
-    const decryptedFullName = decryptText(encrypted_full_name, encryptionKey);
-    console.log("Decrypted p_full_name:", decryptedFullName);
-
-    const applicantPayload = {
-      p_photo: photoFileName,
-      p_full_name: encrypted_full_name,
-      p_email: encrypted_email,
-      p_phone_number: encrypted_phone_number,
-      p_address: encrypted_address,
-      p_ktp: ktpFileName,
-      p_npwp: npwpFileName,
-      p_kk: kkFileName,
-      p_company_type: encrypted_company_type,
-      p_company_name: encrypted_company_name,
-      p_company_address: encrypted_company_address,
-      p_company_kbli: encrypted_company_kbli,
-      p_company_phone_number: encrypted_company_phone_number,
-      p_company_fax_number: encrypted_company_fax_number,
-      p_company_authorized_capital: encrypted_company_authorized_capital,
-      p_company_paid_up_capital: encrypted_company_paid_up_capital,
-      p_company_executives: encrypted_company_executives,
-      p_note: encrypted_note,
-      p_package_id,
-    };
-
-    console.log("Data to insert:", applicantPayload);
+    // Enkripsi teks + logging waktu dan ukuran
+    const encrypted_full_name = encryptWithLog("Full Name", p_full_name, encryptionKey);
+    const encrypted_email = encryptWithLog("Email", p_email, encryptionKey);
+    const encrypted_phone_number = encryptWithLog("Phone Number", String(p_phone_number), encryptionKey);
+    const encrypted_address = encryptWithLog("Address", p_address, encryptionKey);
+    const encrypted_company_type = encryptWithLog("Company Type", p_company_type, encryptionKey);
+    const encrypted_company_name = encryptWithLog("Company Name", p_company_name, encryptionKey);
+    const encrypted_company_address = encryptWithLog("Company Address", p_company_address, encryptionKey);
+    const encrypted_company_kbli = encryptWithLog("Company KBLI", p_company_kbli, encryptionKey);
+    const encrypted_company_phone_number = encryptWithLog("Company Phone Number", p_company_phone_number.toString(), encryptionKey);
+    const encrypted_company_fax_number =
+      p_company_fax_number !== null ? encryptWithLog("Company Fax Number", p_company_fax_number.toString(), encryptionKey) : null;
+    const encrypted_company_authorized_capital = encryptWithLog("Company Authorized Capital", p_company_authorized_capital.toString(), encryptionKey);
+    const encrypted_company_paid_up_capital = encryptWithLog("Company Paid-up Capital", p_company_paid_up_capital.toString(), encryptionKey);
+    const encrypted_company_executives = encryptWithLog("Company Executives", p_company_executives, encryptionKey);
+    const encrypted_note = p_note ? encryptWithLog("Note", p_note, encryptionKey) : null;
 
     const { data: applicantData, error: applicantError } = await supabase.rpc("insert_applicant", {
       p_photo: photoFileName,

@@ -27,7 +27,7 @@ const RequestStatus = async () => {
   };
 
   const data = await fetchStatusRequest();
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="p-6">

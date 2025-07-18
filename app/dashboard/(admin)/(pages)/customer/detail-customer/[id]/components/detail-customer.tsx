@@ -71,6 +71,37 @@ const DetailCustomer = ({ dataApplicant }: GetApplicantProps) => {
               <h2 className="text-xl font-medium">Company Executives</h2>
               <p>{applicant.company_executives}</p>
             </div>
+
+            <div className="space-y-4 pb-8">
+              <h3 className="font-semibold text-md">Documents:</h3>
+              <div className="grid grid-cols-4  gap-4">
+                {applicant.photo && (
+                  <div>
+                    <p className="text-sm font-medium text-zinc-500">PHOTO</p>
+                    <img src={applicant.photo} alt="KTP" className="w-full border rounded shadow" />
+                  </div>
+                )}
+                {applicant.ktp && (
+                  <div>
+                    <p className="text-sm font-medium text-zinc-500">KTP</p>
+                    <img src={applicant.ktp} alt="KTP" className="w-full border rounded shadow" />
+                  </div>
+                )}
+                {applicant.kk && (
+                  <div>
+                    <p className="text-sm font-medium text-zinc-500">KK</p>
+                    <img src={applicant.kk} alt="KK" className="w-full border rounded shadow" />
+                  </div>
+                )}
+                {applicant.npwp && (
+                  <div>
+                    <p className="text-sm font-medium text-zinc-500">NPWP</p>
+                    <img src={applicant.npwp} alt="NPWP" className="w-full border rounded shadow" />
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex gap-4 mt-4">
               <Link href="/dashboard/customer">
                 <button className="border border-gray-300 px-4 py-2 rounded-md hover:bg-zinc-100">Back to List</button>

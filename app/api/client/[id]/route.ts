@@ -15,10 +15,21 @@ const decryptText = (cipherText: string, key: Buffer): string => {
   try {
     const [ivHex, encryptedHex] = cipherText.split(":");
     if (!ivHex || !encryptedHex) throw new Error("Invalid cipher text format");
+
     const iv = Buffer.from(ivHex, "hex");
     const encryptedText = Buffer.from(encryptedHex, "hex");
+
+    const start = process.hrtime();
     const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
     const decrypted = Buffer.concat([decipher.update(encryptedText), decipher.final()]);
+    const elapsed = process.hrtime(start);
+
+    console.log(`\n[Teks Decryption]`);
+    console.log(`- Ukuran data terenkripsi: ${encryptedText.length} bytes`);
+    console.log(`- Ukuran data setelah didekripsi: ${decrypted.length} bytes`);
+    console.log(`- Decrypted: ${decrypted}`);
+    console.log(`- Waktu dekripsi: ${(elapsed[0] * 1e3 + elapsed[1] / 1e6).toFixed(3)} ms`);
+
     return decrypted.toString("utf-8");
   } catch (error) {
     console.error("Decryption error:", error, "CipherText:", cipherText);
@@ -29,9 +40,9 @@ const decryptText = (cipherText: string, key: Buffer): string => {
 // Fungsi Ambil & Dekripsi Gambar dari Supabase Storage
 const decryptFileFromStorage = async (filename: string): Promise<string | null> => {
   try {
-    const { data, error } = await supabaseStorage.storage
-      .from("folder") // Sesuaikan dengan nama bucket kamu
-      .download(`document/${filename}`);
+    const downloadStart = process.hrtime();
+    const { data, error } = await supabaseStorage.storage.from("folder").download(`document/${filename}`);
+    const downloadEnd = process.hrtime(downloadStart);
 
     if (error || !data) {
       console.error("Error downloading encrypted image:", error);
@@ -41,14 +52,19 @@ const decryptFileFromStorage = async (filename: string): Promise<string | null> 
     const encryptedBuffer = await data.arrayBuffer();
     const buffer = Buffer.from(encryptedBuffer);
 
-    // Ambil IV (16 bytes pertama), sisanya adalah encrypted content
     const iv = buffer.subarray(0, 16);
     const content = buffer.subarray(16);
 
+    const decryptStart = process.hrtime();
     const decipher = crypto.createDecipheriv("aes-256-cbc", encryptionKey, iv);
     const decrypted = Buffer.concat([decipher.update(content), decipher.final()]);
+    const decryptEnd = process.hrtime(decryptStart);
 
-    // Ubah jadi Base64 untuk dikirim ke frontend
+    console.log(`\n[File Decryption: ${filename}]`);
+    console.log(`- Ukuran file terenkripsi: ${buffer.length} bytes`);
+    console.log(`- Ukuran file setelah didekripsi: ${decrypted.length} bytes`);
+    console.log(`- Waktu dekripsi: ${(decryptEnd[0] * 1e3 + decryptEnd[1] / 1e6).toFixed(3)} ms`);
+
     return `data:image/png;base64,${decrypted.toString("base64")}`;
   } catch (err) {
     console.error("Failed to decrypt file:", err);
@@ -98,8 +114,6 @@ export const GET = auth(async (req, context) => {
         };
       })
     );
-
-    console.log("RPC result => ", { data, error });
 
     return NextResponse.json({ success: true, data: decryptedData }, { status: 200 });
   }

@@ -70,6 +70,7 @@ function encryptWithLog(label: string, text: string, key: Buffer): string {
 
 export const POST = auth(async function POST(req) {
   if (req.auth) {
+    const userId = req.auth.user.userId;
     const roleId = req.auth.user.roleid;
     if (!roleId) {
       return NextResponse.json({ success: false, message: "Role ID not found" }, { status: 400 });
@@ -243,6 +244,7 @@ export const POST = auth(async function POST(req) {
     const encrypted_note = p_note ? encryptWithLog("Note", p_note, encryptionKey) : null;
 
     const { data: applicantData, error: applicantError } = await supabase.rpc("insert_applicant", {
+      p_user_id: userId,
       p_photo: photoFileName,
       p_full_name: encrypted_full_name,
       p_email: encrypted_email,

@@ -78,7 +78,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         return {
           ...token,
-          userId: user.id,
+          userId: user.userId,
           role: user.role,
           roleid: user.roleid,
           accessToken: user.accessToken,

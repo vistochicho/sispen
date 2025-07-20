@@ -29,8 +29,31 @@ const Dashboard = async () => {
     }
   };
 
+  const fetchClientStatus = async (): Promise<GetClientStatus[]> => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/client/status`, {
+        method: "GET",
+        cache: "no-store",
+        headers: headerObj,
+      });
+      if (response.status === 200) {
+        const data = await response.json();
+        // Map dates into Date objects
+        return data.data as GetClientStatus[];
+      } else {
+        console.error(`Failed to fetch menu items: ${response.statusText}`);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching menu items:", error);
+      return [];
+    }
+  };
+
   const userData = await fetchUser();
-  return <div className="w-full bg-white p-6">{session?.user.role === "users" ? <DashboardUser userData={userData!} /> : <DashboardAdmin />}</div>;
+  const status = await fetchClientStatus();
+
+  return <div className="w-full bg-white p-6">{session?.user.role === "users" ? <DashboardUser userData={userData!} /> : <DashboardAdmin clientStatus={status} />}</div>;
 };
 
 export default Dashboard;

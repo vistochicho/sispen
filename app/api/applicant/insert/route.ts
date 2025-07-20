@@ -138,11 +138,6 @@ export const POST = auth(async function POST(req) {
         const fileBufferKk = Buffer.from(await kk.arrayBuffer());
         const fileBufferNpwp = Buffer.from(await npwp.arrayBuffer());
 
-        // const encryptedPhoto = encryptFile(fileBufferPhoto, encryptionKey);
-        // const encryptedKtp = encryptFile(fileBufferKtp, encryptionKey);
-        // const encryptedKk = encryptFile(fileBufferKk, encryptionKey);
-        // const encryptedNpwp = encryptFile(fileBufferNpwp, encryptionKey);
-
         const startPhoto = performance.now();
         const encryptedPhoto = encryptFile(fileBufferPhoto, encryptionKey);
         const endPhoto = performance.now();
@@ -210,21 +205,6 @@ export const POST = auth(async function POST(req) {
         console.error("Something Went Wrong", err);
       }
     }
-
-    // const encrypted_full_name = encryptText(p_full_name, encryptionKey);
-    // const encrypted_email = encryptText(p_email, encryptionKey);
-    // const encrypted_phone_number = encryptText(p_phone_number.toString(), encryptionKey);
-    // const encrypted_address = encryptText(p_address, encryptionKey);
-    // const encrypted_company_type = encryptText(p_company_type, encryptionKey);
-    // const encrypted_company_name = encryptText(p_company_name, encryptionKey);
-    // const encrypted_company_address = encryptText(p_company_address, encryptionKey);
-    // const encrypted_company_kbli = encryptText(p_company_kbli, encryptionKey);
-    // const encrypted_company_phone_number = encryptText(p_company_phone_number.toString(), encryptionKey);
-    // const encrypted_company_fax_number = p_company_fax_number !== null ? encryptText(p_company_fax_number.toString(), encryptionKey) : null;
-    // const encrypted_company_authorized_capital = encryptText(p_company_authorized_capital.toString(), encryptionKey);
-    // const encrypted_company_paid_up_capital = encryptText(p_company_paid_up_capital.toString(), encryptionKey);
-    // const encrypted_company_executives = encryptText(p_company_executives, encryptionKey);
-    // const encrypted_note = p_note ? encryptText(p_note, encryptionKey) : null;
 
     // Enkripsi teks + logging waktu dan ukuran
     const encrypted_full_name = encryptWithLog("Full Name", p_full_name, encryptionKey);

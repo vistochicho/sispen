@@ -46,8 +46,8 @@ const TableCustomer = ({ dataClient }: ClientProps) => {
   const handleSubmit = async (id: string) => {
     try {
       setIsLoading(true);
-      const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/client/patch/${id}`, {
-        applicant_id: id,
+      const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/client/update/${id}`, {
+        p_cli_id: id,
         p_status: "On Review",
       });
 

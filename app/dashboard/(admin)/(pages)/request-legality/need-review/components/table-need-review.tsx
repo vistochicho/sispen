@@ -23,11 +23,32 @@ const TableNeedReview = ({ dataClient }: ClientProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/client/delete/?id=${id}`);
+
+      if (response.status === 200) {
+        setNotification({ type: "success", message: "Client deleted successfully!" });
+        router.refresh();
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      setNotification({
+        type: "error",
+        message: error.response?.data?.message || "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+      // Hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
   const handleSubmit = async (id: string) => {
     try {
       setIsLoading(true);
-      const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/client/patch/${id}`, {
-        applicant_id: id,
+      const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/client/update/${id}`, {
+        p_cli_id: id,
         p_status: "On Process",
       });
 
@@ -105,6 +126,9 @@ const TableNeedReview = ({ dataClient }: ClientProps) => {
                             Detail
                           </Button>
                         </Link>
+                        <Button variant="destructive" size="sm" className="text-white" onClick={() => handleDelete(company.id)}>
+                          Delete
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>

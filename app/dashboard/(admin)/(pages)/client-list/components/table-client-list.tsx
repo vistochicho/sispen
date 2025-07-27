@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -8,12 +9,39 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface ClientProps {
   dataClient: GetClientList[];
 }
 
 const TableClientList = ({ dataClient }: ClientProps) => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/client/delete/?id=${id}`);
+
+      if (response.status === 200) {
+        setNotification({ type: "success", message: "Client deleted successfully!" });
+        router.refresh();
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      setNotification({
+        type: "error",
+        message: error.response?.data?.message || "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+      // Hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between  items-center mb-4">
@@ -67,6 +95,9 @@ const TableClientList = ({ dataClient }: ClientProps) => {
                           Detail
                         </Button>
                       </Link>
+                      <Button variant="destructive" size="sm" className="text-white" onClick={() => handleDelete(company.id)}>
+                        Delete
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>

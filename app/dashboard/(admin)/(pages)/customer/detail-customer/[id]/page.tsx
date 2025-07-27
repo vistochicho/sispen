@@ -30,7 +30,7 @@ const Detail = async ({ params }: { params: { id: string } }) => {
 
   const dataApplicant = await fetchClientList();
 
-  console.log("dataApplicant", dataApplicant);
+  // console.log("dataApplicant", dataApplicant);
 
   return <DetailCustomer dataApplicant={dataApplicant} />;
 };

@@ -52,9 +52,12 @@ const encryptFile = (fileBuffer: Buffer, key: Buffer): Buffer => {
 function logEncryption(label: string, original: Buffer | string, encrypted: Buffer | string, timeMs: number) {
   const originalSize = typeof original === "string" ? Buffer.byteLength(original, "utf-8") : original.length;
   const encryptedSize = typeof encrypted === "string" ? Buffer.byteLength(encrypted, "utf-8") : encrypted.length;
+  const originalSizeKB = (originalSize / 1024).toFixed(3);
+  const encryptedSizeKB = (encryptedSize / 1024).toFixed(3);
+
   console.log(`=== ${label} ===`);
-  console.log(`Ukuran Data Asli: ${originalSize} bytes`);
-  console.log(`Ukuran Data Terenkripsi: ${encryptedSize} bytes`);
+  console.log(`Ukuran Data Asli: ${originalSizeKB} KB`);
+  console.log(`Ukuran Data Terenkripsi: ${encryptedSizeKB} KB`);
   console.log(`Waktu Enkripsi: ${timeMs.toFixed(3)} ms`);
   console.log("============================\n");
 }

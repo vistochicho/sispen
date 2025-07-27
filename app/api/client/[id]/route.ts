@@ -27,6 +27,7 @@ const decryptText = (cipherText: string, key: Buffer): string => {
     console.log(`\n[Teks Decryption]`);
     console.log(`- Ukuran data terenkripsi: ${encryptedText.length} bytes`);
     console.log(`- Ukuran data setelah didekripsi: ${decrypted.length} bytes`);
+    console.log(`- Encrypted: ${cipherText}`);
     console.log(`- Decrypted: ${decrypted}`);
     console.log(`- Waktu dekripsi: ${(elapsed[0] * 1e3 + elapsed[1] / 1e6).toFixed(3)} ms`);
 
@@ -40,7 +41,7 @@ const decryptText = (cipherText: string, key: Buffer): string => {
 // Fungsi Ambil & Dekripsi Gambar dari Supabase Storage
 const decryptFileFromStorage = async (filename: string): Promise<string | null> => {
   try {
-    const downloadStart = process.hrtime();
+    const downloadStart = process.hrtime(); 
     const { data, error } = await supabaseStorage.storage.from("folder").download(`document/${filename}`);
     const downloadEnd = process.hrtime(downloadStart);
 

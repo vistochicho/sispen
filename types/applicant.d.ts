@@ -18,4 +18,5 @@ type GetApplicantList = {
   ktp?: string;
   kk?: string;
   npwp?: string;
+  logs?: [];
 };

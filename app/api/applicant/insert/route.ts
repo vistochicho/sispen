@@ -3,12 +3,10 @@ import { supabase } from "@/supabase";
 import { NextResponse } from "next/server";
 import Joi from "joi";
 import { v4 as uuidv4 } from "uuid";
-// import path from "path";
 import crypto from "crypto";
 
 export const config = { api: { bodyParser: false } };
 
-// Define schema validation for incoming request data
 const schema = Joi.object({
   photo: Joi.any().allow(null),
   p_full_name: Joi.string().min(3).max(255).required(),
@@ -34,227 +32,164 @@ const schema = Joi.object({
 const encryptionKey: Buffer = Buffer.from(process.env.KEY_SECRET!, "utf-8");
 
 const encryptText = (plainText: string, key: Buffer): string => {
-  const iv = crypto.randomBytes(16); // generate IV
+  const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
   const encrypted = Buffer.concat([cipher.update(plainText, "utf-8"), cipher.final()]);
   return iv.toString("hex") + ":" + encrypted.toString("hex");
 };
 
 const encryptFile = (fileBuffer: Buffer, key: Buffer): Buffer => {
-  const iv = crypto.randomBytes(16); // generate IV
+  const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
   const encrypted = Buffer.concat([cipher.update(fileBuffer), cipher.final()]);
-  // prepend IV to the file
   return Buffer.concat([iv, encrypted]);
 };
 
-// Fungsi logging ukuran dan waktu
-function logEncryption(label: string, original: Buffer | string, encrypted: Buffer | string, timeMs: number) {
+function logAndPush(label: string, original: Buffer | string, encrypted: Buffer | string, timeMs: number, logs: any[]) {
   const originalSize = typeof original === "string" ? Buffer.byteLength(original, "utf-8") : original.length;
   const encryptedSize = typeof encrypted === "string" ? Buffer.byteLength(encrypted, "utf-8") : encrypted.length;
-  const originalSizeKB = (originalSize / 1024).toFixed(3);
-  const encryptedSizeKB = (encryptedSize / 1024).toFixed(3);
+  const log = {
+    label,
+    originalSizeKB: (originalSize / 1024).toFixed(3),
+    encryptedSizeKB: (encryptedSize / 1024).toFixed(3),
+    timeMs: timeMs.toFixed(3),
+  };
 
-  console.log(`=== ${label} ===`);
-  console.log(`Ukuran Data Asli: ${originalSizeKB} KB`);
-  console.log(`Ukuran Data Terenkripsi: ${encryptedSizeKB} KB`);
-  console.log(`Waktu Enkripsi: ${timeMs.toFixed(3)} ms`);
-  console.log("============================\n");
+  // console.log(`=== ${label} ===`);
+  // console.log(`Ukuran Data Asli: ${log.originalSizeKB} KB`);
+  // console.log(`Ukuran Data Terenkripsi: ${log.encryptedSizeKB} KB`);
+  // console.log(`Waktu Enkripsi: ${log.timeMs} ms`);
+  // console.log("============================\n");
+
+  logs.push(log);
 }
 
-// Bungkus enkripsi teks dengan logger waktu & ukuran
-function encryptWithLog(label: string, text: string, key: Buffer): string {
+function encryptWithLog(label: string, text: string, key: Buffer, logs: any[]): string {
   const start = performance.now();
   const encrypted = encryptText(text, key);
   const end = performance.now();
-  logEncryption(label, text, encrypted, end - start);
+  logAndPush(label, text, encrypted, end - start, logs);
   return encrypted;
 }
 
 export const POST = auth(async function POST(req) {
-  if (req.auth) {
-    const userId = req.auth.user.userId;
-    const roleId = req.auth.user.roleid;
-    if (!roleId) {
-      return NextResponse.json({ success: false, message: "Role ID not found" }, { status: 400 });
-    }
+  if (!req.auth) return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
 
-    const formData = await req.formData();
+  const logs: any[] = [];
 
-    const p_full_name = formData.get("p_full_name") as string;
-    const p_email = formData.get("p_email") as string;
-    const p_phone_number = parseInt(formData.get("p_phone_number") as string, 10);
-    const p_address = formData.get("p_address") as string;
-    const p_company_type = formData.get("p_company_type") as string;
-    const p_company_name = formData.get("p_company_name") as string;
-    const p_company_address = formData.get("p_company_address") as string;
-    const p_company_kbli = formData.get("p_company_kbli") as string;
-    const p_company_phone_number = parseInt(formData.get("p_company_phone_number") as string, 10);
-    const p_company_fax_number_raw = formData.get("p_company_fax_number") as string | null;
-    const p_company_fax_number = p_company_fax_number_raw ? parseInt(p_company_fax_number_raw, 10) : null;
-    const p_company_authorized_capital = parseInt(formData.get("p_company_authorized_capital") as string, 10);
-    const p_company_paid_up_capital = parseInt(formData.get("p_company_paid_up_capital") as string, 10);
-    const p_company_executives = formData.get("p_company_executives") as string;
-    const p_note = formData.get("p_note") as string | null;
-    const p_package_id = formData.get("p_package_id") as string;
+  const {
+    user: { userId, roleid, id: createdBy },
+  } = req.auth;
 
-    const photo = formData.get("p_photo") as File;
-    const ktp = formData.get("p_ktp") as File;
-    const npwp = formData.get("p_npwp") as File;
-    const kk = formData.get("p_kk") as File;
+  if (!roleid) return NextResponse.json({ success: false, message: "Role ID not found" }, { status: 400 });
 
-    // Validate request body
-    const { error: validationError } = schema.validate({
-      p_full_name,
-      p_email,
-      p_phone_number,
-      p_address,
-      p_company_type,
-      p_company_name,
-      p_company_address,
-      p_company_kbli,
-      p_company_phone_number,
-      p_company_fax_number,
-      p_company_authorized_capital,
-      p_company_paid_up_capital,
-      p_company_executives,
-      p_note,
-      p_package_id,
-      photo,
-      ktp,
-      npwp,
-      kk,
-    });
-    if (validationError) {
-      return NextResponse.json({ success: false, message: validationError.details[0].message }, { status: 400 });
-    }
+  const formData = await req.formData();
 
-    let photoFileName;
-    let ktpFileName;
-    let kkFileName;
-    let npwpFileName;
+  const fields = {
+    p_full_name: formData.get("p_full_name") as string,
+    p_email: formData.get("p_email") as string,
+    p_phone_number: parseInt(formData.get("p_phone_number") as string, 10),
+    p_address: formData.get("p_address") as string,
+    p_company_type: formData.get("p_company_type") as string,
+    p_company_name: formData.get("p_company_name") as string,
+    p_company_address: formData.get("p_company_address") as string,
+    p_company_kbli: formData.get("p_company_kbli") as string,
+    p_company_phone_number: parseInt(formData.get("p_company_phone_number") as string, 10),
+    p_company_fax_number: formData.get("p_company_fax_number") ? parseInt(formData.get("p_company_fax_number") as string, 10) : null,
+    p_company_authorized_capital: parseInt(formData.get("p_company_authorized_capital") as string, 10),
+    p_company_paid_up_capital: parseInt(formData.get("p_company_paid_up_capital") as string, 10),
+    p_company_executives: formData.get("p_company_executives") as string,
+    p_note: formData.get("p_note") as string | null,
+    p_package_id: formData.get("p_package_id") as string,
+  };
 
-    if (photo && ktp && kk && npwp) {
-      try {
-        const fileBufferPhoto = Buffer.from(await photo.arrayBuffer());
-        const fileBufferKtp = Buffer.from(await ktp.arrayBuffer());
-        const fileBufferKk = Buffer.from(await kk.arrayBuffer());
-        const fileBufferNpwp = Buffer.from(await npwp.arrayBuffer());
+  const photo = formData.get("p_photo") as File;
+  const ktp = formData.get("p_ktp") as File;
+  const kk = formData.get("p_kk") as File;
+  const npwp = formData.get("p_npwp") as File;
 
-        const startPhoto = performance.now();
-        const encryptedPhoto = encryptFile(fileBufferPhoto, encryptionKey);
-        const endPhoto = performance.now();
-        logEncryption("Photo", fileBufferPhoto, encryptedPhoto, endPhoto - startPhoto);
-
-        const startKtp = performance.now();
-        const encryptedKtp = encryptFile(fileBufferKtp, encryptionKey);
-        const endKtp = performance.now();
-        logEncryption("KTP", fileBufferKtp, encryptedKtp, endKtp - startKtp);
-
-        const startKk = performance.now();
-        const encryptedKk = encryptFile(fileBufferKk, encryptionKey);
-        const endKk = performance.now();
-        logEncryption("KK", fileBufferKk, encryptedKk, endKk - startKk);
-
-        const startNpwp = performance.now();
-        const encryptedNpwp = encryptFile(fileBufferNpwp, encryptionKey);
-        const endNpwp = performance.now();
-        logEncryption("NPWP", fileBufferNpwp, encryptedNpwp, endNpwp - startNpwp);
-
-        const uniqueFileNamePhoto = `${uuidv4()}.enc`;
-        const uniqueFileNameKtp = `${uuidv4()}.enc`;
-        const uniqueFileNameKk = `${uuidv4()}.enc`;
-        const uniqueFileNameNpwp = `${uuidv4()}.enc`;
-
-        photoFileName = uniqueFileNamePhoto;
-        ktpFileName = uniqueFileNameKtp;
-        kkFileName = uniqueFileNameKk;
-        npwpFileName = uniqueFileNameNpwp;
-
-        const files = [
-          {
-            path: `document/${uniqueFileNamePhoto}`,
-            file: encryptedPhoto,
-          },
-          {
-            path: `document/${uniqueFileNameKtp}`,
-            file: encryptedKtp,
-          },
-          {
-            path: `document/${uniqueFileNameKk}`,
-            file: encryptedKk,
-          },
-          {
-            path: `document/${uniqueFileNameNpwp}`,
-            file: encryptedNpwp,
-          },
-        ];
-
-        const uploadPromise = files.map(({ path, file }) =>
-          supabase.storage.from("folder").upload(path, file, {
-            cacheControl: "0",
-            upsert: false,
-          })
-        );
-
-        const uploadResults = await Promise.all(uploadPromise);
-
-        uploadResults.forEach(({ error }, idx) => {
-          if (error) {
-            throw new Error(`Upload failed for file: ${files[idx].path} - ${error.message}`);
-          }
-        });
-      } catch (err) {
-        console.error("Something Went Wrong", err);
-      }
-    }
-
-    // Enkripsi teks + logging waktu dan ukuran
-    const encrypted_full_name = encryptWithLog("Full Name", p_full_name, encryptionKey);
-    const encrypted_email = encryptWithLog("Email", p_email, encryptionKey);
-    const encrypted_phone_number = encryptWithLog("Phone Number", String(p_phone_number), encryptionKey);
-    const encrypted_address = encryptWithLog("Address", p_address, encryptionKey);
-    const encrypted_company_type = encryptWithLog("Company Type", p_company_type, encryptionKey);
-    const encrypted_company_name = encryptWithLog("Company Name", p_company_name, encryptionKey);
-    const encrypted_company_address = encryptWithLog("Company Address", p_company_address, encryptionKey);
-    const encrypted_company_kbli = encryptWithLog("Company KBLI", p_company_kbli, encryptionKey);
-    const encrypted_company_phone_number = encryptWithLog("Company Phone Number", p_company_phone_number.toString(), encryptionKey);
-    const encrypted_company_fax_number =
-      p_company_fax_number !== null ? encryptWithLog("Company Fax Number", p_company_fax_number.toString(), encryptionKey) : null;
-    const encrypted_company_authorized_capital = encryptWithLog("Company Authorized Capital", p_company_authorized_capital.toString(), encryptionKey);
-    const encrypted_company_paid_up_capital = encryptWithLog("Company Paid-up Capital", p_company_paid_up_capital.toString(), encryptionKey);
-    const encrypted_company_executives = encryptWithLog("Company Executives", p_company_executives, encryptionKey);
-    const encrypted_note = p_note ? encryptWithLog("Note", p_note, encryptionKey) : null;
-
-    const { data: applicantData, error: applicantError } = await supabase.rpc("insert_applicant", {
-      p_user_id: userId,
-      p_photo: photoFileName,
-      p_full_name: encrypted_full_name,
-      p_email: encrypted_email,
-      p_phone_number: encrypted_phone_number,
-      p_address: encrypted_address,
-      p_ktp: ktpFileName,
-      p_npwp: npwpFileName,
-      p_kk: kkFileName,
-      p_company_type: encrypted_company_type,
-      p_company_name: encrypted_company_name,
-      p_company_address: encrypted_company_address,
-      p_company_kbli: encrypted_company_kbli,
-      p_company_phone_number: encrypted_company_phone_number,
-      p_company_fax_number: encrypted_company_fax_number,
-      p_company_authorized_capital: encrypted_company_authorized_capital,
-      p_company_paid_up_capital: encrypted_company_paid_up_capital,
-      p_company_executives: encrypted_company_executives,
-      p_note: encrypted_note,
-      p_package_id,
-      p_created_by: req.auth.user.id,
-    });
-
-    if (applicantError) {
-      return NextResponse.json({ success: false, message: applicantError.message }, { status: 400 });
-    }
-
-    return NextResponse.json({ success: true, message: "Data Inserted Successfully", data: applicantData });
+  const { error: validationError } = schema.validate({ ...fields, photo, ktp, kk, npwp });
+  if (validationError) {
+    return NextResponse.json({ success: false, message: validationError.details[0].message }, { status: 400 });
   }
-  return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+
+  let photoFileName, ktpFileName, kkFileName, npwpFileName;
+
+  try {
+    const encryptAndUploadFile = async (file: File, label: string): Promise<string> => {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const start = performance.now();
+      const encrypted = encryptFile(buffer, encryptionKey);
+      const end = performance.now();
+      logAndPush(label, buffer, encrypted, end - start, logs);
+      const filename = `${uuidv4()}.enc`;
+
+      const { error } = await supabase.storage.from("folder").upload(`document/${filename}`, encrypted, {
+        cacheControl: "0",
+        upsert: false,
+      });
+
+      if (error) throw new Error(`Upload failed for ${label}: ${error.message}`);
+      return filename;
+    };
+
+    photoFileName = await encryptAndUploadFile(photo, "Photo");
+    ktpFileName = await encryptAndUploadFile(ktp, "KTP");
+    kkFileName = await encryptAndUploadFile(kk, "KK");
+    npwpFileName = await encryptAndUploadFile(npwp, "NPWP");
+  } catch (err) {
+    console.error("File upload error:", err);
+    return NextResponse.json({ success: false, message: "File upload failed" }, { status: 500 });
+  }
+
+  const encryptedFields = {
+    p_full_name: encryptWithLog("Full Name", fields.p_full_name, encryptionKey, logs),
+    p_email: encryptWithLog("Email", fields.p_email, encryptionKey, logs),
+    p_phone_number: encryptWithLog("Phone Number", fields.p_phone_number.toString(), encryptionKey, logs),
+    p_address: encryptWithLog("Address", fields.p_address, encryptionKey, logs),
+    p_company_type: encryptWithLog("Company Type", fields.p_company_type, encryptionKey, logs),
+    p_company_name: encryptWithLog("Company Name", fields.p_company_name, encryptionKey, logs),
+    p_company_address: encryptWithLog("Company Address", fields.p_company_address, encryptionKey, logs),
+    p_company_kbli: encryptWithLog("Company KBLI", fields.p_company_kbli, encryptionKey, logs),
+    p_company_phone_number: encryptWithLog("Company Phone Number", fields.p_company_phone_number.toString(), encryptionKey, logs),
+    p_company_fax_number:
+      fields.p_company_fax_number !== null ? encryptWithLog("Company Fax Number", fields.p_company_fax_number.toString(), encryptionKey, logs) : null,
+    p_company_authorized_capital: encryptWithLog("Company Authorized Capital", fields.p_company_authorized_capital.toString(), encryptionKey, logs),
+    p_company_paid_up_capital: encryptWithLog("Company Paid-up Capital", fields.p_company_paid_up_capital.toString(), encryptionKey, logs),
+    p_company_executives: encryptWithLog("Company Executives", fields.p_company_executives, encryptionKey, logs),
+    p_note: fields.p_note ? encryptWithLog("Note", fields.p_note, encryptionKey, logs) : null,
+  };
+
+  const { data, error } = await supabase.rpc("insert_applicant", {
+    p_user_id: userId,
+    p_photo: photoFileName,
+    p_full_name: encryptedFields.p_full_name,
+    p_email: encryptedFields.p_email,
+    p_phone_number: encryptedFields.p_phone_number,
+    p_address: encryptedFields.p_address,
+    p_ktp: ktpFileName,
+    p_npwp: npwpFileName,
+    p_kk: kkFileName,
+    p_company_type: encryptedFields.p_company_type,
+    p_company_name: encryptedFields.p_company_name,
+    p_company_address: encryptedFields.p_company_address,
+    p_company_kbli: encryptedFields.p_company_kbli,
+    p_company_phone_number: encryptedFields.p_company_phone_number,
+    p_company_fax_number: encryptedFields.p_company_fax_number,
+    p_company_authorized_capital: encryptedFields.p_company_authorized_capital,
+    p_company_paid_up_capital: encryptedFields.p_company_paid_up_capital,
+    p_company_executives: encryptedFields.p_company_executives,
+    p_note: encryptedFields.p_note,
+    p_package_id: fields.p_package_id,
+    p_created_by: createdBy,
+    p_encryption_log: JSON.stringify(logs),
+  });
+
+  console.log("test log", JSON.stringify(logs));
+
+  if (error) {
+    return NextResponse.json({ success: false, message: error.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ success: true, message: "Data Inserted Successfully", data });
 });

@@ -2,14 +2,36 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link";
 import React from "react";
 
-interface GetApplicantProps {
-  dataApplicant: GetApplicantList[];
+interface DecryptionLog {
+  label: string;
+  originalSizeKB: string;
+  decryptedSizeKB: string;
+  timeMs: string;
 }
 
-const DetailCustomer = ({ dataApplicant }: GetApplicantProps) => {
+interface GetApplicantList {
+  [key: string]: any; // General catch for dynamic access
+  logs?: any;
+  photo?: string;
+  ktp?: string;
+  kk?: string;
+  npwp?: string;
+}
+
+interface GetApplicantProps {
+  dataApplicant: GetApplicantList[];
+  decryptionLogs?: {
+    label: string;
+    originalSizeKB: string;
+    decryptedSizeKB: string;
+    timeMs: string;
+  }[];
+}
+
+const DetailCustomer = ({ dataApplicant, decryptionLogs = [] }: GetApplicantProps) => {
   const applicant = dataApplicant[0];
 
-  // Parse logs
+  // Parse encryption logs
   let parsedLogs: any[] = [];
   try {
     parsedLogs = typeof applicant.logs === "string" ? JSON.parse(applicant.logs) : applicant.logs ?? [];
@@ -17,7 +39,6 @@ const DetailCustomer = ({ dataApplicant }: GetApplicantProps) => {
     console.error("Error parsing logs", err);
   }
 
-  // Daftar field yang berupa image
   const imageFields = ["photo", "ktp", "kk", "npwp"];
 
   return (
@@ -25,7 +46,7 @@ const DetailCustomer = ({ dataApplicant }: GetApplicantProps) => {
       <div className="p-6">
         <div className="space-y-2 pb-6">
           <h2 className="font-semibold text-lg leading-7">Detail Customer</h2>
-          <p className="text-sm">View and manage encryption logs and documents in one place.</p>
+          <p className="text-sm">View and manage encryption and decryption logs, as well as uploaded documents.</p>
         </div>
 
         {/* ENCRYPTION LOGS */}
@@ -45,7 +66,6 @@ const DetailCustomer = ({ dataApplicant }: GetApplicantProps) => {
               {parsedLogs.map((log, idx) => {
                 const key = convertLabelToKey(log.label);
                 const value = (applicant as any)[key];
-
                 return (
                   <TableRow key={idx}>
                     <TableCell>{log.label}</TableCell>
@@ -70,8 +90,35 @@ const DetailCustomer = ({ dataApplicant }: GetApplicantProps) => {
           </Table>
         </div>
 
+        {/* Decryption */}
+        {decryptionLogs && decryptionLogs.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-xl font-semibold mb-4">Decryption Logs</h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Label</TableHead>
+                  <TableHead>Original Size (KB)</TableHead>
+                  <TableHead>Decrypted Size (KB)</TableHead>
+                  <TableHead>Time (ms)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {decryptionLogs.map((log, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell>{log.label}</TableCell>
+                    <TableCell>{log.originalSizeKB}</TableCell>
+                    <TableCell>{log.decryptedSizeKB}</TableCell>
+                    <TableCell>{log.timeMs}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
         {/* BACK BUTTON */}
-        <div className="flex gap-4 mt-8">
+        <div className="flex gap-4 mt-10">
           <Link href="/dashboard/customer">
             <button className="border border-gray-300 px-4 py-2 rounded-md hover:bg-zinc-100">Back to List</button>
           </Link>
@@ -83,7 +130,7 @@ const DetailCustomer = ({ dataApplicant }: GetApplicantProps) => {
 
 export default DetailCustomer;
 
-// Util function: "Full Name" => "full_name"
+// Convert "Full Name" → "full_name"
 function convertLabelToKey(label: string) {
   return label.toLowerCase().replace(/-/g, "_").replace(/ /g, "_");
 }

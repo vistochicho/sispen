@@ -9,8 +9,11 @@ const supabaseStorage = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, proc
 // AES-256 Key dari ENV
 const encryptionKey: Buffer = Buffer.from(process.env.KEY_SECRET!, "utf-8");
 
-// Fungsi dekripsi teks
-const decryptText = (cipherText: string, key: Buffer): string => {
+// Penampung logs
+const decryptionLogs: any[] = [];
+
+// Fungsi dekripsi teks dengan log
+const decryptTextWithLog = (label: string, cipherText: string, key: Buffer): string => {
   if (!cipherText) return "";
   try {
     const [ivHex, encryptedHex] = cipherText.split(":");
@@ -24,24 +27,26 @@ const decryptText = (cipherText: string, key: Buffer): string => {
     const decrypted = Buffer.concat([decipher.update(encryptedText), decipher.final()]);
     const elapsed = process.hrtime(start);
 
-    console.log(`\n[Teks Decryption]`);
-    console.log(`- Ukuran data terenkripsi: ${encryptedText.length} bytes`);
-    console.log(`- Ukuran data setelah didekripsi: ${decrypted.length} bytes`);
-    console.log(`- Encrypted: ${cipherText}`);
-    console.log(`- Decrypted: ${decrypted}`);
-    console.log(`- Waktu dekripsi: ${(elapsed[0] * 1e3 + elapsed[1] / 1e6).toFixed(3)} ms`);
+    const timeMs = (elapsed[0] * 1e3 + elapsed[1] / 1e6).toFixed(3);
+
+    decryptionLogs.push({
+      label,
+      originalSizeKB: (encryptedText.length / 1024).toFixed(3),
+      decryptedSizeKB: (decrypted.length / 1024).toFixed(3),
+      timeMs,
+    });
 
     return decrypted.toString("utf-8");
   } catch (error) {
-    console.error("Decryption error:", error, "CipherText:", cipherText);
+    console.error(`Failed to decrypt ${label}:`, error);
     return "[Decryption Failed]";
   }
 };
 
-// Fungsi Ambil & Dekripsi Gambar dari Supabase Storage
-const decryptFileFromStorage = async (filename: string): Promise<string | null> => {
+// Fungsi dekripsi file dari Supabase Storage
+const decryptFileFromStorage = async (filename: string, label: string): Promise<string | null> => {
   try {
-    const downloadStart = process.hrtime(); 
+    const downloadStart = process.hrtime();
     const { data, error } = await supabaseStorage.storage.from("folder").download(`document/${filename}`);
     const downloadEnd = process.hrtime(downloadStart);
 
@@ -61,10 +66,14 @@ const decryptFileFromStorage = async (filename: string): Promise<string | null> 
     const decrypted = Buffer.concat([decipher.update(content), decipher.final()]);
     const decryptEnd = process.hrtime(decryptStart);
 
-    console.log(`\n[File Decryption: ${filename}]`);
-    console.log(`- Ukuran file terenkripsi: ${buffer.length} bytes`);
-    console.log(`- Ukuran file setelah didekripsi: ${decrypted.length} bytes`);
-    console.log(`- Waktu dekripsi: ${(decryptEnd[0] * 1e3 + decryptEnd[1] / 1e6).toFixed(3)} ms`);
+    const timeMs = (decryptEnd[0] * 1e3 + decryptEnd[1] / 1e6).toFixed(3);
+
+    decryptionLogs.push({
+      label,
+      originalSizeKB: (buffer.length / 1024).toFixed(3),
+      decryptedSizeKB: (decrypted.length / 1024).toFixed(3),
+      timeMs,
+    });
 
     return `data:image/png;base64,${decrypted.toString("base64")}`;
   } catch (err) {
@@ -73,50 +82,53 @@ const decryptFileFromStorage = async (filename: string): Promise<string | null> 
   }
 };
 
+// Handler utama GET
 export const GET = auth(async (req, context) => {
   const { id } = (await context.params) ?? {};
 
-  if (req.auth) {
-    const roleId = req.auth.user.roleid;
-    if (!roleId) {
-      return NextResponse.json({ success: false, message: "Role ID not found" }, { status: 400 });
-    }
-
-    const { data, error } = await supabase.rpc("get_client_by_id", {
-      p_cli_id: id,
-    });
-
-    if (error) {
-      return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });
-    }
-
-    const decryptedData = await Promise.all(
-      data.map(async (client: any) => {
-        return {
-          ...client,
-          full_name: decryptText(client.full_name, encryptionKey),
-          email: decryptText(client.email, encryptionKey),
-          phone_number: decryptText(client.phone_number, encryptionKey),
-          address: decryptText(client.address, encryptionKey),
-          company_type: decryptText(client.company_type, encryptionKey),
-          company_name: decryptText(client.company_name, encryptionKey),
-          company_address: decryptText(client.company_address, encryptionKey),
-          company_kbli: decryptText(client.company_kbli, encryptionKey),
-          company_phone_number: decryptText(client.company_phone_number, encryptionKey),
-          company_fax_number: decryptText(client.company_fax_number, encryptionKey),
-          company_authorized_capital: decryptText(client.company_authorized_capital, encryptionKey),
-          company_paid_up_capital: decryptText(client.company_paid_up_capital, encryptionKey),
-          company_executives: decryptText(client.company_executives, encryptionKey),
-          // Dekripsi gambar
-          photo: await decryptFileFromStorage(client.photo),
-          ktp: await decryptFileFromStorage(client.ktp),
-          kk: await decryptFileFromStorage(client.kk),
-          npwp: await decryptFileFromStorage(client.npwp),
-        };
-      })
-    );
-
-    return NextResponse.json({ success: true, data: decryptedData }, { status: 200 });
+  if (!req.auth) {
+    return NextResponse.json({ success: false, message: "No Authorized" }, { status: 401 });
   }
-  return NextResponse.json({ success: false, message: "No Authorized" }, { status: 401 });
+
+  const roleId = req.auth.user.roleid;
+  if (!roleId) {
+    return NextResponse.json({ success: false, message: "Role ID not found" }, { status: 400 });
+  }
+
+  const { data, error } = await supabase.rpc("get_client_by_id", {
+    p_cli_id: id,
+  });
+
+  if (error) {
+    return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });
+  }
+
+  decryptionLogs.length = 0;
+
+  const decryptedData = await Promise.all(
+    data.map(async (client: any) => {
+      return {
+        ...client,
+        full_name: decryptTextWithLog("Full Name", client.full_name, encryptionKey),
+        email: decryptTextWithLog("Email", client.email, encryptionKey),
+        phone_number: decryptTextWithLog("Phone Number", client.phone_number, encryptionKey),
+        address: decryptTextWithLog("Address", client.address, encryptionKey),
+        company_type: decryptTextWithLog("Company Type", client.company_type, encryptionKey),
+        company_name: decryptTextWithLog("Company Name", client.company_name, encryptionKey),
+        company_address: decryptTextWithLog("Company Address", client.company_address, encryptionKey),
+        company_kbli: decryptTextWithLog("Company KBLI", client.company_kbli, encryptionKey),
+        company_phone_number: decryptTextWithLog("Company Phone Number", client.company_phone_number, encryptionKey),
+        company_fax_number: decryptTextWithLog("Company Fax Number", client.company_fax_number, encryptionKey),
+        company_authorized_capital: decryptTextWithLog("Company Authorized Capital", client.company_authorized_capital, encryptionKey),
+        company_paid_up_capital: decryptTextWithLog("Company Paid-up Capital", client.company_paid_up_capital, encryptionKey),
+        company_executives: decryptTextWithLog("Company Executives", client.company_executives, encryptionKey),
+        photo: await decryptFileFromStorage(client.photo, "Photo"),
+        ktp: await decryptFileFromStorage(client.ktp, "KTP"),
+        kk: await decryptFileFromStorage(client.kk, "KK"),
+        npwp: await decryptFileFromStorage(client.npwp, "NPWP"),
+      };
+    })
+  );
+
+  return NextResponse.json({ success: true, data: decryptedData, logs: decryptionLogs }, { status: 200 });
 });

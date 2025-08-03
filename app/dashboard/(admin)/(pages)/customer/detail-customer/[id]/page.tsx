@@ -3,11 +3,18 @@ import DetailCustomer from "./components/detail-customer";
 import { headers } from "next/headers";
 
 const Detail = async ({ params }: { params: { id: string } }) => {
-  const { id } = await params;
-
+  const { id } = params;
   const headerObj = await headers();
 
-  const fetchClientList = async (): Promise<GetClientList[]> => {
+  const fetchClientDetail = async (): Promise<{
+    data: GetClientList[];
+    logs: {
+      label: string;
+      originalSizeKB: string;
+      decryptedSizeKB: string;
+      timeMs: string;
+    }[];
+  }> => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/client/${id}`, {
         method: "GET",
@@ -17,22 +24,23 @@ const Detail = async ({ params }: { params: { id: string } }) => {
 
       if (response.status === 200) {
         const data = await response.json();
-        return data.data as GetClientList[];
+        return {
+          data: data.data as GetClientList[],
+          logs: data.logs ?? [],
+        };
       } else {
         console.error(`Failed to fetch applicant details: ${response.statusText}`);
-        return [];
+        return { data: [], logs: [] };
       }
     } catch (error) {
       console.error("Error fetching applicant details:", error);
-      return [];
+      return { data: [], logs: [] };
     }
   };
 
-  const dataApplicant = await fetchClientList();
+  const applicantResponse = await fetchClientDetail();
 
-  console.log("dataApplicant", dataApplicant);
-
-  return <DetailCustomer dataApplicant={dataApplicant} />;
+  return <DetailCustomer dataApplicant={applicantResponse.data} decryptionLogs={applicantResponse.logs} />;
 };
 
 export default Detail;
